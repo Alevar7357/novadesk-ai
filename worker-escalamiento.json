@@ -1,0 +1,1077 @@
+{
+  "name": "Pre entrega 4 - 2 Worker escalamiento",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "soporte-l2@example.invalid",
+        "subject": "={{ `Escalamiento L2 - Ticket #${$json.fields.Codigo_Ticket} - ${$json.fields.Nombre}` }}",
+        "emailType": "text",
+        "message": "={{\n[\n  `Ticket: ${$json.fields.Codigo_Ticket}`,\n  `Contacto: ${$json.fields.Nombre ?? 'No informado'}`,\n  `Prioridad: ${$json.fields.Prioridad ?? 'No informada'}`,\n  `Descripción: ${$json.fields.Descripcion ?? 'No informada'}`,\n  `Motivo del escalamiento: ${$('Worker_escalamiento_airtable').first().json.motivo_escalamiento ?? 'No informado'}`\n].join('\\n')\n}}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        64
+      ],
+      "id": "16a1ec8f-b095-4a1c-a707-563f436f73c1",
+      "name": "Mail escalado L2",
+      "webhookId": "be4a3374-a065-4da8-903c-91c7196e2b30",
+      "retryOnFail": false,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fbe90159-1824-40e2-8aac-f25bac8c6cb4",
+              "name": "exito",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "f5ca78c2-8b4b-402f-9d12-b7330e0e9e70",
+              "name": "escalado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "d9321e49-8cba-4d0d-b5a4-4b56414457aa",
+              "name": "notificacion_enviada",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "6af98168-b807-4a73-a71c-eeae1cebf8d1",
+              "name": "ticket_id",
+              "value": "={{ $('Worker_escalamiento_airtable').first().json.ticket_id }}",
+              "type": "string"
+            },
+            {
+              "id": "d2628334-7c5e-47ba-92d2-1fa982413ea6",
+              "name": "resultado_escalamiento",
+              "value": "={{ $json.fields.Resultado_Escalamiento }}",
+              "type": "string"
+            },
+            {
+              "id": "a8347048-8c0f-45bc-8f5a-ef36113fb5b3",
+              "name": "mensaje",
+              "value": "={{ 'Ticket escalado correctamente a soporte L2. Notificación enviada.' }}",
+              "type": "string"
+            },
+            {
+              "id": "3ad653ff-de74-47f1-be15-ae3775943e7f",
+              "name": "fecha_escalamiento",
+              "value": "={{ $json.fields.FechaEscalamiento }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        704,
+        -144
+      ],
+      "id": "6b36796b-66e2-45c6-9b46-b83c61646735",
+      "name": "Resultado Escalamiento"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fcdd9f0b-639a-44fd-be1f-bfad8f703506",
+              "name": "exito",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "95ebb345-f5d7-4399-9d82-f8a781f2da34",
+              "name": "escalado",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "ad6623c7-8764-4306-88d1-43fb3c1efbae",
+              "name": "notificacion_enviada",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "9ceb3aca-42f1-4cbd-b9e9-e8b47d9dfe3a",
+              "name": "ticket_id",
+              "value": "={{ $('Worker_escalamiento_airtable').first().json.ticket_id }}",
+              "type": "string"
+            },
+            {
+              "id": "d5a83daa-0561-443f-826f-9b1c4976d558",
+              "name": "resultado_escalamiento",
+              "value": "={{'Error de notificación'}}",
+              "type": "string"
+            },
+            {
+              "id": "c7907ccd-d5ba-48db-bb55-61a866f311a8",
+              "name": "mensaje",
+              "value": "={{ 'No se pudo enviar el correo de escalamiento a L2.' }}",
+              "type": "string"
+            },
+            {
+              "id": "c42c4f55-bf9a-4805-a132-f6af1f81a9fa",
+              "name": "fecha_escalamiento",
+              "value": "=''",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        432,
+        272
+      ],
+      "id": "d1b36b20-27d1-4974-8f69-c7f45c1ef35b",
+      "name": "Error escalamiento"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ticket_id"
+            },
+            {
+              "name": "empresa"
+            },
+            {
+              "name": "nombre_contacto"
+            },
+            {
+              "name": "descripcion"
+            },
+            {
+              "name": "motivo_escalamiento"
+            },
+            {
+              "name": "prioridad"
+            },
+            {
+              "name": "contacto_record_id"
+            },
+            {
+              "name": "empresa_record_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -896,
+        80
+      ],
+      "id": "dd86367e-c02a-4916-bf81-a218e9d289be",
+      "name": "Worker_escalamiento_airtable"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000010",
+          "mode": "list",
+          "cachedResultName": "Tickets"
+        },
+        "filterByFormula": "={{ \"{Codigo_Ticket}=\" + \"'\" + $json.ticket_id + \"'\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -720,
+        80
+      ],
+      "id": "0456a93d-3ceb-411f-8621-53b2c2cf1c5b",
+      "name": "Buscar_info",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000010",
+          "mode": "list",
+          "cachedResultName": "Tickets"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Buscar_info').first().json.id }}",
+            "Escalado_L2": true,
+            "Resultado_Escalamiento": "={{ 'Notificación enviada' }}",
+            "FechaEscalamiento": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cotizaciones",
+              "displayName": "Cotizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Evaluaciones_IA",
+              "displayName": "Evaluaciones_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Usuario",
+              "displayName": "Usuario",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Descripcion",
+              "displayName": "Descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ventas",
+                  "value": "Ventas"
+                },
+                {
+                  "name": "Compras",
+                  "value": "Compras"
+                },
+                {
+                  "name": "Stock",
+                  "value": "Stock"
+                },
+                {
+                  "name": "Tesorería",
+                  "value": "Tesorería"
+                },
+                {
+                  "name": "Contabilidad",
+                  "value": "Contabilidad"
+                },
+                {
+                  "name": "Configuración",
+                  "value": "Configuración"
+                },
+                {
+                  "name": "Acceso",
+                  "value": "Acceso"
+                },
+                {
+                  "name": "Otros",
+                  "value": "Otros"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Prioridad",
+              "displayName": "Prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Baja",
+                  "value": "Baja"
+                },
+                {
+                  "name": "Media",
+                  "value": "Media"
+                },
+                {
+                  "name": "Alta",
+                  "value": "Alta"
+                },
+                {
+                  "name": "Critica",
+                  "value": "Critica"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Abierto",
+                  "value": "Abierto"
+                },
+                {
+                  "name": "En proceso",
+                  "value": "En proceso"
+                },
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Resuelto",
+                  "value": "Resuelto"
+                },
+                {
+                  "name": "Cerrado",
+                  "value": "Cerrado"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "ChatID",
+              "displayName": "ChatID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Canal",
+              "displayName": "Canal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Telegram",
+                  "value": "Telegram"
+                },
+                {
+                  "name": "Email",
+                  "value": "Email"
+                },
+                {
+                  "name": "Web",
+                  "value": "Web"
+                },
+                {
+                  "name": "Otro",
+                  "value": "Otro"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Escalado_L2",
+              "displayName": "Escalado_L2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Resultado_Escalamiento",
+              "displayName": "Resultado_Escalamiento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Trace_ID",
+              "displayName": "Trace_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "FechaEscalamiento",
+              "displayName": "FechaEscalamiento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Actualizacion",
+              "displayName": "Fecha_Actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tipo_Solicitud",
+              "displayName": "Tipo_Solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Consulta",
+                  "value": "Consulta"
+                },
+                {
+                  "name": "Incidente",
+                  "value": "Incidente"
+                },
+                {
+                  "name": "Solicitud",
+                  "value": "Solicitud"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Numero_Ticket",
+              "displayName": "Numero_Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Codigo_Ticket",
+              "displayName": "Codigo_Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -80
+      ],
+      "id": "dfa4132b-6946-4f17-88fd-a6c5c5422efb",
+      "name": "Actualizar_ticket_AT",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "57e3958b-bf56-490d-8bdd-99b1742813a7",
+              "name": "exito",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "fdda4100-1d32-45e5-9545-b6cb805fb08a",
+              "name": "escalado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "95047153-dca7-4752-88a9-2b4889ef4c2e",
+              "name": "notificacion_enviada",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "dc0cd532-a97a-4dde-a68c-cf690e17b7df",
+              "name": "ticket_id",
+              "value": "={{ $json.fields.Codigo_Ticket }}",
+              "type": "string"
+            },
+            {
+              "id": "bdb47d68-9513-4783-b053-b020be0a79f6",
+              "name": "resultado_escalamiento",
+              "value": "={{ $json.fields.Resultado_Escalamiento }}",
+              "type": "string"
+            },
+            {
+              "id": "ac7a8ef6-1a3d-484f-9ae5-6e56e529461b",
+              "name": "mensaje",
+              "value": "={{ 'El ticket ya estaba escalado a soporte L2. No se envió otro correo.' }}",
+              "type": "string"
+            },
+            {
+              "id": "4eecb7b6-d36a-44b7-a3d8-cc04bc2aa75c",
+              "name": "fecha_escalamiento",
+              "value": "={{ $json.fields.FechaEscalamiento ?? '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        128,
+        -144
+      ],
+      "id": "9b2edbd2-298e-427f-a4c5-f2725bfffe00",
+      "name": "Respuesta ya escalado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "041a78bd-a7a6-47ec-8753-41ca6310e204",
+              "leftValue": "={{ !!$json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -576,
+        -48
+      ],
+      "id": "a1e66e55-4d7c-4ce3-b968-0d8cd5ec0959",
+      "name": "existe tk"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "3117bee3-f660-4ea1-919c-cc1949eabe20",
+              "leftValue": "={{ $json.fields.Escalado_L2 ?? false }}",
+              "rightValue": "si",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -112,
+        -80
+      ],
+      "id": "1b11ff7e-bc55-4f89-a935-91e1416bfcd7",
+      "name": "escalado?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "d4269883-99e4-4dda-8c10-a6d9dc957ca8",
+              "leftValue": "={{    ($('Buscar_info').first().json.fields?.Contacto ?? [])     .includes($('Worker_escalamiento_airtable').first().json.contacto_record_id)   &&   ($('Buscar_info').first().json.fields?.Empresa ?? [])     .includes($('Worker_escalamiento_airtable').first().json.empresa_record_id) }}",
+              "rightValue": "Validar_propietario_escalamiento",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -352,
+        -64
+      ],
+      "id": "dee60330-6efb-40bb-a7fe-54aa90c228b7",
+      "name": "Validar_propietario_escalamiento"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "85c252e9-3810-408d-8875-09c7747e5405",
+              "name": "exito",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "8373115a-222c-4607-8933-72a5a01495dc",
+              "name": "ticket_id",
+              "value": "={{ $('Worker_escalamiento_airtable').first().json.ticket_id }}",
+              "type": "string"
+            },
+            {
+              "id": "de239366-5427-4ddd-bc2d-a0f09cf44690",
+              "name": "mensaje",
+              "value": "={{ 'No se encontró el ticket solicitado en Airtable.'}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -432,
+        144
+      ],
+      "id": "811c1e17-b9b1-4808-8856-dee850540453",
+      "name": "Resultado  no encontrado"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ed954481-8ac6-4f52-852b-3f3000ab9c36",
+              "name": "exito",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "3adb1f66-365c-4d8d-bf2c-ae99f232fe87",
+              "name": "escalado",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "ce5796f9-dcc3-48f9-9a78-c42cdabc8b3a",
+              "name": "notificacion_enviada",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "447197f5-7ad7-43ae-a436-d5957088f5ce",
+              "name": "codigo_error",
+              "value": "={{ 'TICKET_NO_DISPONIBLE' }}",
+              "type": "string"
+            },
+            {
+              "id": "79bc0841-7ea3-462d-bcf1-7fc2eee23c2d",
+              "name": "mensaje",
+              "value": "={{ 'No se encontró un ticket asociado a este contacto y empresa.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -128,
+        144
+      ],
+      "id": "4a367fd8-7d98-419b-ac64-59824eb714e2",
+      "name": "Respuesta escalamiento no autorizado"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "74511afa-3572-4035-8995-0856d949be6c",
+              "name": "exito",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "edf4ebb8-21ff-4d98-873c-6689f92c27a6",
+              "name": "escalado",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "e901a918-6f36-4827-9b6f-2ab5c88454cf",
+              "name": "notificacion_enviada",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "23adc52e-14a0-4ebb-8522-dd355b678f09",
+              "name": "ticket_id",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "5da3f209-654a-48a7-9eef-1582faf7c8f7",
+              "name": "codigo_error",
+              "value": "={{ 'ERROR_ACTUALIZACION_AIRTABLE' }}",
+              "type": "string"
+            },
+            {
+              "id": "1c4d3727-3c91-49e5-9143-cb99f9b39ebc",
+              "name": "resultado_escalamiento",
+              "value": "={{ 'Notificación enviada, actualización pendiente' }}",
+              "type": "string"
+            },
+            {
+              "id": "8b47f64f-23da-4411-beae-ed7fa6e6b8e1",
+              "name": "mensaje",
+              "value": "={{ 'Se envió el correo a soporte L2, pero no se pudo registrar el escalamiento en Airtable. No vuelvas a solicitarlo hasta que soporte verifique el estado.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        704,
+        48
+      ],
+      "id": "24ba73d7-6e93-4913-93b6-15c0c0301f52",
+      "name": "Error actualizacion escalamiento"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Mail escalado L2": {
+      "main": [
+        [
+          {
+            "node": "Actualizar_ticket_AT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error escalamiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Worker_escalamiento_airtable": {
+      "main": [
+        [
+          {
+            "node": "Buscar_info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_info": {
+      "main": [
+        [
+          {
+            "node": "existe tk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar_ticket_AT": {
+      "main": [
+        [
+          {
+            "node": "Resultado Escalamiento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error actualizacion escalamiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta ya escalado": {
+      "main": [
+        []
+      ]
+    },
+    "existe tk": {
+      "main": [
+        [
+          {
+            "node": "Validar_propietario_escalamiento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resultado  no encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "escalado?": {
+      "main": [
+        [
+          {
+            "node": "Respuesta ya escalado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mail escalado L2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar_propietario_escalamiento": {
+      "main": [
+        [
+          {
+            "node": "escalado?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta escalamiento no autorizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "nodeGroups": [],
+  "id": "HeLTv4MahI6WmIfA",
+  "tags": []
+}

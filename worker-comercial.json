@@ -1,0 +1,5533 @@
+{
+  "name": "Pre entrega 4 - Worker Comercial",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "1fb1dc07-1d5d-4a1b-b624-5f39af95f9fd",
+              "leftValue": "={{ $json.fields?.HubSpot_Company_ID ?? '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -160,
+        -64
+      ],
+      "id": "69985e70-e380-4fb1-ad75-1d20d4af5bf0",
+      "name": "¿Tiene HubSpot_Company_ID?"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "empresa"
+            },
+            {
+              "name": "cuit"
+            },
+            {
+              "name": "empresa_record_id"
+            },
+            {
+              "name": "contacto_record_id"
+            },
+            {
+              "name": "email"
+            },
+            {
+              "name": "servicio_id"
+            },
+            {
+              "name": "solicitud_id"
+            },
+            {
+              "name": "cantidad"
+            },
+            {
+              "name": "descripcion_solicitud"
+            },
+            {
+              "name": "accion"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -960,
+        -48
+      ],
+      "id": "073949ac-5565-414a-8fd0-6830d4fc1754",
+      "name": "Worker Comercial"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "company",
+        "name": "={{ $('Buscar empresa Airtable').item.json.fields.Nombre }}",
+        "additionalFields": {
+          "customPropertiesUi": {
+            "customPropertiesValues": [
+              {
+                "property": "cuit",
+                "value": "={{ $('Buscar empresa Airtable').item.json.fields.CUIT }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        -80
+      ],
+      "id": "48ba2dc8-6ae1-4eae-8920-f496f913844e",
+      "name": "Crear empresa Hubspot"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/companies/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n  \"filterGroups\": [\n    {\n      \"filters\": [\n        {\n          \"propertyName\": \"cuit\",\n          \"operator\": \"EQ\",\n          \"value\": \"{{ $('Buscar empresa Airtable').item.json.fields.CUIT }}\"\n        }\n      ]\n    }\n  ],\n  \"properties\": [\"name\", \"cuit\"],\n  \"limit\": 2\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        48,
+        80
+      ],
+      "id": "d00d6393-4b51-4fd7-bfd9-13cc3345ab74",
+      "name": "Consulta Empresa por CUIT"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "company",
+        "operation": "get",
+        "companyId": {
+          "__rl": true,
+          "value": "={{ $json.fields.HubSpot_Company_ID }}",
+          "mode": "id"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.3,
+      "position": [
+        64,
+        -384
+      ],
+      "id": "34da8d75-0b63-412b-96da-afa89d15d413",
+      "name": "Buscar empresa Hubspot"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000003",
+          "mode": "list",
+          "cachedResultName": "Empresas"
+        },
+        "id": "={{ $json.empresa_record_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        -64
+      ],
+      "id": "9ecf55bb-fa61-4bd4-8c10-cb13c953ab9a",
+      "name": "Buscar empresa Airtable",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000003",
+          "mode": "list",
+          "cachedResultName": "Empresas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "HubSpot_Company_ID": "={{ String($json.companyId) }}",
+            "id": "={{ $('Buscar empresa Airtable').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "CUIT",
+              "displayName": "CUIT",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contactos",
+              "displayName": "Contactos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tickets",
+              "displayName": "Tickets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cotizaciones",
+              "displayName": "Cotizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Empresa_ID",
+              "displayName": "Empresa_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Activa",
+                  "value": "Activa"
+                },
+                {
+                  "name": "Inactiva",
+                  "value": "Inactiva"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "HubSpot_Company_ID",
+              "displayName": "HubSpot_Company_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Alta",
+              "displayName": "Fecha_Alta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        -80
+      ],
+      "id": "5a34d9d0-87d7-4269-a88a-9ed81e4969ea",
+      "name": "Actualizar empresa Hubspot_ID"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000003",
+          "mode": "list",
+          "cachedResultName": "Empresas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "HubSpot_Company_ID": "={{ String($('Consulta Empresa por CUIT').item.json.results[0].id) }}",
+            "id": "={{ $('Buscar empresa Airtable').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "CUIT",
+              "displayName": "CUIT",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contactos",
+              "displayName": "Contactos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tickets",
+              "displayName": "Tickets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cotizaciones",
+              "displayName": "Cotizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Empresa_ID",
+              "displayName": "Empresa_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Activa",
+                  "value": "Activa"
+                },
+                {
+                  "name": "Inactiva",
+                  "value": "Inactiva"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "HubSpot_Company_ID",
+              "displayName": "HubSpot_Company_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Alta",
+              "displayName": "Fecha_Alta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        80
+      ],
+      "id": "7590286e-156d-4fc7-bb66-6510c3d628ef",
+      "name": "Acatualizar empresa Hubspot_ID desde Hubspot"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.total }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "2ebad266-17c7-40c1-b5a0-5a2720c48703"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CREAR EMPRESA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "491e3947-0b51-4064-8e1c-98b2fa4f8491",
+                    "leftValue": "={{ $json.total }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "VINCULAR EMPRESA EXISTENTE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "041856ee-f607-461d-bdc0-8e36d6400b5d",
+                    "leftValue": "={{ $json.total }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "REVISAR EMPRESAS DUPLICADOS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        240,
+        64
+      ],
+      "id": "f019c9c6-dfd6-4cae-9427-8d2d9615f582",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25c6db7c-a4ea-4205-967c-0a4cc75f004e",
+              "name": "empresa_record_id",
+              "value": "={{ $('Buscar empresa Airtable').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "948cd97f-f559-44ec-be9b-82a81ef30113",
+              "name": "=hubspot_company_id",
+              "value": "={{ String($('Crear empresa Hubspot').item.json.companyId) }}",
+              "type": "number"
+            },
+            {
+              "id": "580b08b7-277a-47a0-8f4b-2379b2e40931",
+              "name": "contacto_record_id",
+              "value": "={{ $('Worker Comercial').first().json.usuario_record_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        944,
+        -80
+      ],
+      "id": "d629e234-59d3-40f4-be2c-2bd0baf6a2c6",
+      "name": "unificar informacion 2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25c6db7c-a4ea-4205-967c-0a4cc75f004e",
+              "name": "empresa_record_id",
+              "value": "={{ $('Buscar empresa Airtable').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "948cd97f-f559-44ec-be9b-82a81ef30113",
+              "name": "=hubspot_company_id",
+              "value": "={{ String($('Consulta Empresa por CUIT').item.json.results[0].id) }}",
+              "type": "number"
+            },
+            {
+              "id": "580b08b7-277a-47a0-8f4b-2379b2e40931",
+              "name": "contacto_record_id",
+              "value": "={{ $('Worker Comercial').first().json.usuario_record_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        944,
+        80
+      ],
+      "id": "0980c864-7fff-4635-834e-ce1bb817020c",
+      "name": "unificar informacion 3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25c6db7c-a4ea-4205-967c-0a4cc75f004e",
+              "name": "empresa_record_id",
+              "value": "={{ $('Buscar empresa Airtable').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "948cd97f-f559-44ec-be9b-82a81ef30113",
+              "name": "=hubspot_company_id",
+              "value": "={{ String($('Buscar empresa Airtable').item.json.fields.HubSpot_Company_ID) }}",
+              "type": "number"
+            },
+            {
+              "id": "580b08b7-277a-47a0-8f4b-2379b2e40931",
+              "name": "contacto_record_id",
+              "value": "={{ $('Worker Comercial').item.json.contacto_record_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        272,
+        -384
+      ],
+      "id": "a70e9972-2f77-4518-a238-63c1b8141b2e",
+      "name": "unificar informacion"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "1fb1dc07-1d5d-4a1b-b624-5f39af95f9fd",
+              "leftValue": "={{ $json.fields?.HubSpot_Contact_ID ?? '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1616,
+        -400
+      ],
+      "id": "414fed01-ce0f-4db5-b0ba-0385870bb030",
+      "name": "¿Tiene HubSpot_Contacto_ID?"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.total }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "id": "2ebad266-17c7-40c1-b5a0-5a2720c48703"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CREAR CONTACTO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "491e3947-0b51-4064-8e1c-98b2fa4f8491",
+                    "leftValue": "={{ $json.total }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "VINCULAR CONTACTO EXISTENTE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "041856ee-f607-461d-bdc0-8e36d6400b5d",
+                    "leftValue": "={{ $json.total }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "REVISAR CONTACTOS DUPLICADOS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        2128,
+        -240
+      ],
+      "id": "95e74607-3b61-4d51-b912-14f19ccf35ee",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "email": "={{ $('Buscar usuario Airtable').item.json.fields.Email }}",
+        "additionalFields": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.3,
+      "position": [
+        2384,
+        -416
+      ],
+      "id": "28111b15-c0f2-4d4b-8a4b-c759e35464b5",
+      "name": "Crear contacto Hubspot"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000002",
+          "mode": "list",
+          "cachedResultName": "Contactos"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('¿Tiene HubSpot_Contacto_ID?').item.json.id }}",
+            "HubSpot_Contact_ID": "={{String($json.vid)}}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tickets",
+              "displayName": "Tickets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cotizaciones",
+              "displayName": "Cotizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Memoria_Sesiones",
+              "displayName": "Memoria_Sesiones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Mensajes_Temporales",
+              "displayName": "Mensajes_Temporales",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contacto_ID",
+              "displayName": "Contacto_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Telegram_ID",
+              "displayName": "Telegram_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "ChatID",
+              "displayName": "ChatID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Canal",
+              "displayName": "Canal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Telegram",
+                  "value": "Telegram"
+                },
+                {
+                  "name": "Email",
+                  "value": "Email"
+                },
+                {
+                  "name": "Web",
+                  "value": "Web"
+                },
+                {
+                  "name": "Otro",
+                  "value": "Otro"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Activo",
+                  "value": "Activo"
+                },
+                {
+                  "name": "Inactivo",
+                  "value": "Inactivo"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "HubSpot_Contact_ID",
+              "displayName": "HubSpot_Contact_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Alta",
+              "displayName": "Fecha_Alta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ultima_Interaccion",
+              "displayName": "Ultima_Interaccion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2560,
+        -416
+      ],
+      "id": "53fe1411-d407-4211-9284-9ec40c25a8a1",
+      "name": "Actualizar Contacto_Hubspot_ID1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000002",
+          "mode": "list",
+          "cachedResultName": "Contactos"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Buscar usuarioa Airtable').item.json.id }}",
+            "HubSpot_Contact_ID": "={{ String($('Buscar contacto API').item.json.results[0].id) }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tickets",
+              "displayName": "Tickets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cotizaciones",
+              "displayName": "Cotizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Memoria_Sesiones",
+              "displayName": "Memoria_Sesiones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Mensajes_Temporales",
+              "displayName": "Mensajes_Temporales",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contacto_ID",
+              "displayName": "Contacto_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Telegram_ID",
+              "displayName": "Telegram_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "ChatID",
+              "displayName": "ChatID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Telefono",
+              "displayName": "Telefono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Canal",
+              "displayName": "Canal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Telegram",
+                  "value": "Telegram"
+                },
+                {
+                  "name": "Email",
+                  "value": "Email"
+                },
+                {
+                  "name": "Web",
+                  "value": "Web"
+                },
+                {
+                  "name": "Otro",
+                  "value": "Otro"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Activo",
+                  "value": "Activo"
+                },
+                {
+                  "name": "Inactivo",
+                  "value": "Inactivo"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "HubSpot_Contact_ID",
+              "displayName": "HubSpot_Contact_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Alta",
+              "displayName": "Fecha_Alta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ultima_Interaccion",
+              "displayName": "Ultima_Interaccion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2384,
+        -224
+      ],
+      "id": "f9042d27-40e9-4c62-8e6c-baf630af2367",
+      "name": "Actualizar Contacto_Hubspot_ID2"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ 'https://api.hubapi.com/crm/v4/objects/contacts/' + $json.hubspot_contact_id + '/associations/default/companies/' + $json.hubspot_company_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        3040,
+        -416
+      ],
+      "id": "eb767e06-13cc-4f12-9ea0-904681ce31ca",
+      "name": "Asociar contacto a una empresa"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a950c1c1-34c1-4448-bde1-44ff31b497e2",
+              "name": "hubspot_company_id",
+              "value": "={{ $('Buscar empresa Airtable').first().json.fields.HubSpot_Company_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "552c06a6-2366-4ab1-8aef-dde05844e7bb",
+              "name": "hubspot_contact_id",
+              "value": "={{ String($('Buscar usuario Airtable').first().json.fields.HubSpot_Contact_ID) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2752,
+        -416
+      ],
+      "id": "6412d395-8a9e-44ec-8b04-bc926261a3a4",
+      "name": "Hubspot id"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a950c1c1-34c1-4448-bde1-44ff31b497e2",
+              "name": "hubspot_company_id",
+              "value": "={{ $('Buscar empresa Airtable').first().json.fields.HubSpot_Company_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "552c06a6-2366-4ab1-8aef-dde05844e7bb",
+              "name": "hubspot_contact_id",
+              "value": "={{ String($('Buscar usuario Airtable').first().json.fields.HubSpot_Contact_ID) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2752,
+        -224
+      ],
+      "id": "97a56fcd-6f81-4f3c-af62-bc40403a7b06",
+      "name": "Hubspot id1"
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000002",
+          "mode": "list",
+          "cachedResultName": "Contactos"
+        },
+        "id": "={{ $json.contacto_record_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1216,
+        -384
+      ],
+      "id": "ca608fdc-c944-494e-af7a-6e100aaa6418",
+      "name": "Buscar usuario Airtable"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "contactId": {
+          "__rl": true,
+          "value": "={{ $json.fields.HubSpot_Contact_ID }}",
+          "mode": "id"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.3,
+      "position": [
+        1968,
+        -592
+      ],
+      "id": "99cce52f-5bd1-49f6-b433-6f46f9b8e54d",
+      "name": "Buscar contacto Hubspot"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "592df149-2208-4440-ade7-174173cd3377",
+              "name": "hubspot_company_id",
+              "value": "={{ String($('unificar informacion').isExecuted ? $('unificar informacion').first().json.hubspot_company_id : $('unificar informacion 2').isExecuted ? $('unificar informacion 2').first().json.hubspot_company_id : $('unificar informacion 3').first().json.hubspot_company_id) }}",
+              "type": "string"
+            },
+            {
+              "id": "8d9055c2-54f8-41f4-8b1b-9537cc2b073a",
+              "name": "hubspot_contact_id",
+              "value": "={{ String($('Buscar usuario Airtable').item.json.fields.HubSpot_Contact_ID) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2752,
+        -592
+      ],
+      "id": "a5235b69-762d-4a02-add7-4675f57db69b",
+      "name": "Hubsspot id2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "9462a709-61b6-46b2-8835-4b2af5baf4f6",
+              "leftValue": "={{ ($json.fields.Empresa ?? []).includes($('Buscar empresa Airtable').first().json.id) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1408,
+        -384
+      ],
+      "id": "727a306d-71f5-414b-ab1c-721c11bb3d2e",
+      "name": "¿Empresa vinculada a contacto?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a752a339-0959-4b14-8843-0ee66e50e77a",
+              "name": "estado",
+              "value": "={{ 'Rechazado' }}",
+              "type": "string"
+            },
+            {
+              "id": "731b081f-190b-43e1-87e7-beee34b4155d",
+              "name": "codigo",
+              "value": "={{ 'EMPRESA_NO_AUTORIZADA' }}",
+              "type": "string"
+            },
+            {
+              "id": "bb48dbc1-6711-403f-8dc6-c0ce03e2c6ef",
+              "name": "mensaje",
+              "value": "={{ 'No se pudo validar que el usuario esté autorizado para solicitar cotizaciones en nombre de esta empresa.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1632,
+        -192
+      ],
+      "id": "4d45f660-05ae-497d-986b-4b7ccb58f874",
+      "name": "Rechazo solicitud comercial"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "8a2837f6-5a2a-496f-a3fd-4543ed319fd8",
+              "leftValue": "={{ $json.fields?.Activo === true && !!$json.fields?.Servicio_ID }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        4064,
+        -416
+      ],
+      "id": "703c35d5-a177-4a9e-80d6-79f3b74c3cc2",
+      "name": "¿servicio valido?"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fields.Modalidad_Precio }}",
+                    "rightValue": "Por_Horas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d5035232-1de7-41c6-9467-e9ac7911c0e1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "POR HORA"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "ab33ce6a-3cb2-40a7-b122-bc22c6cf46cf",
+                    "leftValue": "={{ $json.fields.Modalidad_Precio }}",
+                    "rightValue": "Precio_Fijo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PRECIO FIJO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "076ead5b-1357-4a42-9bd1-200ce0d5e372",
+                    "leftValue": "={{ $json.fields.Modalidad_Precio }}",
+                    "rightValue": "Cotizacion_Manual",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COTIZACION MANUAL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        4192,
+        -816
+      ],
+      "id": "67b4d314-2a74-4b82-be2d-17f053b9a944",
+      "name": "Modalidad de precio"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b9b2c999-9b6e-4722-86d6-4bbfac5afd87",
+              "name": "estado",
+              "value": "={{ 'rechazado' }}",
+              "type": "string"
+            },
+            {
+              "id": "2a228c1a-9947-4b6f-9ccf-74e66f55074c",
+              "name": "codigo",
+              "value": "={{ 'SERVICIO_NO_DISPONIBLE' }}",
+              "type": "string"
+            },
+            {
+              "id": "c20681d1-a8e3-48db-90a9-4a240fea8be0",
+              "name": "mensaje",
+              "value": "={{ 'El servicio solicitado no existe o no esta disponible' }}",
+              "type": "string"
+            },
+            {
+              "id": "59556199-4b9d-432e-bdeb-57f178aa8f26",
+              "name": "puede_continuar",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        4464,
+        -304
+      ],
+      "id": "db0d2518-b3a9-44d8-b13b-7bf628650369",
+      "name": "Servicio no disponible"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bfe3f954-f3b6-492b-a397-5b053aa1271a",
+              "name": "nombre_servicio",
+              "value": "={{ $json.fields.Nombre_Servicio }}",
+              "type": "string"
+            },
+            {
+              "id": "543aaea5-cbac-4297-9e36-bfa2eca58bb2",
+              "name": "servicio_record_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "37d280de-0359-4481-bc1f-5802a9ea6941",
+              "name": "servicio_id",
+              "value": "={{ $json.fields.Servicio_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "e2b936b4-548c-450c-a64d-4c0d30ff1b5e",
+              "name": "modalidad_precio",
+              "value": "={{ $json.fields.Modalidad_Precio }}",
+              "type": "string"
+            },
+            {
+              "id": "35cc4ce5-f137-4092-9854-3e1dfc82619e",
+              "name": "cantidad",
+              "value": "={{ Number($('Worker Comercial').first().json.cantidad) }}",
+              "type": "number"
+            },
+            {
+              "id": "5477d3ea-61a9-4b2e-ae3a-0a7054452075",
+              "name": "horas_estimadas",
+              "value": "={{ Number($json.fields.Horas_Estimadas) }}",
+              "type": "number"
+            },
+            {
+              "id": "20b2426b-9aeb-4574-bba0-b7907d2560e6",
+              "name": "tarifa_hora",
+              "value": "={{ Number($json.fields.Tarifa_Hora) }}",
+              "type": "number"
+            },
+            {
+              "id": "8c4aa826-ba32-48db-ae37-fbd7bd023db3",
+              "name": "precio_unitario",
+              "value": "={{ Number($json.fields.Horas_Estimadas) * Number($json.fields.Tarifa_Hora) }}",
+              "type": "number"
+            },
+            {
+              "id": "5f14a455-01bf-4967-bea6-aabf0ef384a5",
+              "name": "importe_total",
+              "value": "={{ Number($json.fields.Horas_Estimadas) * Number($json.fields.Tarifa_Hora) * Number($('Worker Comercial').first().json.cantidad) }}",
+              "type": "number"
+            },
+            {
+              "id": "d38c1439-580b-4bba-b593-a8d52e32021e",
+              "name": "moneda",
+              "value": "={{ $json.fields.Moneda}}",
+              "type": "string"
+            },
+            {
+              "id": "4d1a755b-7129-4155-96f1-391cb763a822",
+              "name": "requiere_revision",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        4464,
+        -992
+      ],
+      "id": "4e496123-5dea-403b-b65d-70fb1ba971ff",
+      "name": "Calcular precio por hora"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bfe3f954-f3b6-492b-a397-5b053aa1271a",
+              "name": "nombre_servicio",
+              "value": "={{ $json.fields.Nombre_Servicio }}",
+              "type": "string"
+            },
+            {
+              "id": "543aaea5-cbac-4297-9e36-bfa2eca58bb2",
+              "name": "servicio_record_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "37d280de-0359-4481-bc1f-5802a9ea6941",
+              "name": "servicio_id",
+              "value": "={{ $json.fields.Servicio_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "e2b936b4-548c-450c-a64d-4c0d30ff1b5e",
+              "name": "modalidad_precio",
+              "value": "={{ $json.fields.Modalidad_Precio }}",
+              "type": "string"
+            },
+            {
+              "id": "35cc4ce5-f137-4092-9854-3e1dfc82619e",
+              "name": "cantidad",
+              "value": "={{ Number($('Worker Comercial').first().json.cantidad) }}",
+              "type": "number"
+            },
+            {
+              "id": "d38c1439-580b-4bba-b593-a8d52e32021e",
+              "name": "moneda",
+              "value": "={{ $json.fields.Moneda}}",
+              "type": "string"
+            },
+            {
+              "id": "4d1a755b-7129-4155-96f1-391cb763a822",
+              "name": "requiere_revision",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "176f2153-e6eb-41ae-ad70-2d326bcb2b99",
+              "name": "estado_cotizacion",
+              "value": "={{ 'Pendiente_Revision' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        4464,
+        -560
+      ],
+      "id": "5be433c3-74d7-4b58-9927-0861f980488a",
+      "name": "Cotizacion manual"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "219d0074-41c7-4c49-8921-ada7cbd2f5a4",
+              "leftValue": "={{\n  Number.isInteger(Number($json.cantidad)) &&\n  Number($json.cantidad) > 0 &&\n  Boolean($json.servicio_record_id) &&\n  Boolean($json.servicio_id) &&\n  Boolean($json.moneda) &&\n  (\n    (\n      $json.modalidad_precio === 'Cotizacion_Manual' &&\n      $json.requiere_revision === true\n    )\n    ||\n    (\n      ['Por_Horas', 'Precio_Fijo'].includes($json.modalidad_precio) &&\n      $json.requiere_revision === false &&\n      $json.importe_total != null &&\n      $json.importe_total !== '' &&\n      Number.isFinite(Number($json.importe_total)) &&\n      Number($json.importe_total) > 0\n    )\n  )\n}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        4720,
+        -800
+      ],
+      "id": "f50ee141-0661-4792-b0c6-d293164a0c63",
+      "name": "¿Datos de cotización Validos ?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "e775ff00-7725-4708-8634-ff9f8caad130",
+              "leftValue": "={{ !!$json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        5072,
+        -896
+      ],
+      "id": "adeb2c95-c744-4564-b0ee-59304fc6469a",
+      "name": "¿Cotizacion existente?"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000006",
+          "mode": "list",
+          "cachedResultName": "Cotizaciones"
+        },
+        "filterByFormula": "={{ \"{Solicitud_ID} = '\" + $('Worker Comercial').first().json.solicitud_id + \"'\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        4896,
+        -896
+      ],
+      "id": "763379de-6bd2-4bf1-b96b-1b7d4413d7e8",
+      "name": "Buscar cotizacion",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bfe3f954-f3b6-492b-a397-5b053aa1271a",
+              "name": "nombre_servicio",
+              "value": "={{ $json.fields.Nombre_Servicio }}",
+              "type": "string"
+            },
+            {
+              "id": "543aaea5-cbac-4297-9e36-bfa2eca58bb2",
+              "name": "servicio_record_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "37d280de-0359-4481-bc1f-5802a9ea6941",
+              "name": "servicio_id",
+              "value": "={{ $json.fields.Servicio_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "e2b936b4-548c-450c-a64d-4c0d30ff1b5e",
+              "name": "modalidad_precio",
+              "value": "={{ $json.fields.Modalidad_Precio }}",
+              "type": "string"
+            },
+            {
+              "id": "35cc4ce5-f137-4092-9854-3e1dfc82619e",
+              "name": "cantidad",
+              "value": "={{ Number($('Worker Comercial').first().json.cantidad) }}",
+              "type": "number"
+            },
+            {
+              "id": "5477d3ea-61a9-4b2e-ae3a-0a7054452075",
+              "name": "horas_estimadas",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "20b2426b-9aeb-4574-bba0-b7907d2560e6",
+              "name": "tarifa_hora",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "8c4aa826-ba32-48db-ae37-fbd7bd023db3",
+              "name": "precio_unitario",
+              "value": "={{ Number($json.fields.Precio_Fijo) }}",
+              "type": "number"
+            },
+            {
+              "id": "5f14a455-01bf-4967-bea6-aabf0ef384a5",
+              "name": "importe_total",
+              "value": "={{ Number($json.fields.Precio_Fijo) * Number($('Worker Comercial').first().json.cantidad) }}",
+              "type": "number"
+            },
+            {
+              "id": "d38c1439-580b-4bba-b593-a8d52e32021e",
+              "name": "moneda",
+              "value": "={{ $json.fields.Moneda}}",
+              "type": "string"
+            },
+            {
+              "id": "4d1a755b-7129-4155-96f1-391cb763a822",
+              "name": "requiere_revision",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        4464,
+        -800
+      ],
+      "id": "5d932964-17c9-4f1f-87d1-a9dddfd4bd52",
+      "name": "Calcular precio fijo"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "4dbe0c01-0f0c-43a3-9312-f9240c99b5bd",
+              "leftValue": "={{ $('Cotizacion manual').isExecuted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        5280,
+        -720
+      ],
+      "id": "22770fdf-f436-4214-b099-85d31aa4564c",
+      "name": "¿Requiere revision comercial?"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000006",
+          "mode": "list",
+          "cachedResultName": "Cotizaciones"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Notificacion_Enviada": false,
+            "Cotizacion_ID": "={{ 'COT-' + $('Worker Comercial').first().json.solicitud_id }}",
+            "Solicitud_ID": "={{ $('Worker Comercial').first().json.solicitud_id }}",
+            "Empresa": "={{ [$('Worker Comercial').first().json.empresa_record_id] }}",
+            "Contacto": "={{ [$('Worker Comercial').first().json.contacto_record_id] }}",
+            "Descripcion_Solicitud": "={{ $('Worker Comercial').first().json.descripcion_solicitud }}",
+            "Estado": "={{\n  $('Cotizacion manual').isExecuted\n    ? 'Pendiente_Evaluacion'\n    : 'Borrador'\n}}",
+            "Subtotal": "=",
+            "Total": "=",
+            "Observaciones": "={{ $('Cotizacion manual').isExecuted   ? 'Cotización pendiente de evaluación y asignación de precio por un responsable comercial.'   : 'Cotización calculada automáticamente según el catálogo de servicios.' }}",
+            "Moneda": "ARS",
+            "Fecha_Actualizacion": "={{ $now.toISO() }}",
+            "Fecha": "={{ $now.toISO() }}",
+            "Estado_Sync_HubSpot": "Pendiente"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Cotizacion_ID",
+              "displayName": "Cotizacion_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Solicitud_ID",
+              "displayName": "Solicitud_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ticket",
+              "displayName": "Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cotizacion_Detalle",
+              "displayName": "Cotizacion_Detalle",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Descripcion_Solicitud",
+              "displayName": "Descripcion_Solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tipo_Cotizacion",
+              "displayName": "Tipo_Cotizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Automatica",
+                  "value": "Automatica"
+                },
+                {
+                  "name": "Evaluacion_Humana",
+                  "value": "Evaluacion_Humana"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Borrador",
+                  "value": "Borrador"
+                },
+                {
+                  "name": "Pendiente_Evaluacion",
+                  "value": "Pendiente_Evaluacion"
+                },
+                {
+                  "name": "Pendiente_Aprobacion",
+                  "value": "Pendiente_Aprobacion"
+                },
+                {
+                  "name": "Enviada",
+                  "value": "Enviada"
+                },
+                {
+                  "name": "Aprobada",
+                  "value": "Aprobada"
+                },
+                {
+                  "name": "Rechazada",
+                  "value": "Rechazada"
+                },
+                {
+                  "name": "Cancelada",
+                  "value": "Cancelada"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Moneda",
+              "displayName": "Moneda",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "ARS",
+                  "value": "ARS"
+                },
+                {
+                  "name": "USD",
+                  "value": "USD"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Subtotal",
+              "displayName": "Subtotal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Actualizacion",
+              "displayName": "Fecha_Actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Aprobacion",
+              "displayName": "Fecha_Aprobacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Responsable_Evaluacion",
+              "displayName": "Responsable_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Resultado_Evaluacion",
+              "displayName": "Resultado_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notificacion_Enviada",
+              "displayName": "Notificacion_Enviada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "HubSpot_Deal_ID",
+              "displayName": "HubSpot_Deal_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Trace_ID",
+              "displayName": "Trace_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Evaluaciones_IA",
+              "displayName": "Evaluaciones_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado_Sync_HubSpot",
+              "displayName": "Estado_Sync_HubSpot",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Sincronizado",
+                  "value": "Sincronizado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        5536,
+        -800
+      ],
+      "id": "4f235686-0166-4171-ae25-2ccaa450a984",
+      "name": "Crear cotizacion manual"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce812d83-3a51-440f-84e9-13516e447c7d",
+              "name": "cotizacion_record_id",
+              "value": "={{ $('Crear cotizacion manual').first().json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "dcf74fca-127b-441d-a0d2-4a1c9c3373b5",
+              "name": "=solicitud_id",
+              "value": "={{ $('Worker Comercial').first().json.solicitud_id }}",
+              "type": "string"
+            },
+            {
+              "id": "e8b017e5-818a-4b9d-ad61-e5a833df8f73",
+              "name": "empresa",
+              "value": "={{ $('Worker Comercial').first().json.empresa }}",
+              "type": "string"
+            },
+            {
+              "id": "2fec29d7-5592-4f93-bd1d-1d47938d2fa9",
+              "name": "servicio",
+              "value": "={{ $('Cotizacion manual').first().json.nombre_servicio }}",
+              "type": "string"
+            },
+            {
+              "id": "8b8a20ab-8f05-48a0-9323-6fa2b897e866",
+              "name": "descripcion",
+              "value": "={{ $('Worker Comercial').first().json.descripcion_solicitud }}",
+              "type": "string"
+            },
+            {
+              "id": "2aeca4bf-f299-4875-8ff9-e9a4a09a4fbb",
+              "name": "estado",
+              "value": "={{ $('Crear cotizacion manual').first().json.fields.Estado }}\n",
+              "type": "string"
+            },
+            {
+              "id": "252e7920-5fd5-4f75-9f7b-c7beea7d1b7a",
+              "name": "requiere_revision",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        5920,
+        -800
+      ],
+      "id": "abeef4d8-abbf-428b-ab05-536ceee83d27",
+      "name": "Escalamiento comercial"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0000000007",
+          "mode": "list",
+          "cachedResultName": "novadesk-cotizaciones"
+        },
+        "text": "={{\n'📋 *NUEVA COTIZACIÓN PENDIENTE*\\n\\n' +\n'*Empresa:* ' + $json.empresa + '\\n' +\n'*Servicio:* ' + $json.servicio + '\\n' +\n'*Descripción:* ' + $json.descripcion + '\\n' +\n'*Solicitud ID:* ' + $json.solicitud_id + '\\n' +\n'*Estado:* ' + $json.estado + '\\n\\n' +\n'⚠️ Requiere evaluación comercial y asignación de precio.'\n}}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        6080,
+        -800
+      ],
+      "id": "89f20908-d361-480c-8880-b39a05e37ce7",
+      "name": "Notificar revision comercial",
+      "webhookId": "4ade83a6-4803-456d-bb75-99e70caae559"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000006",
+          "mode": "list",
+          "cachedResultName": "Cotizaciones"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Notificacion_Enviada": true,
+            "id": "={{ $('Crear cotizacion manual').first().json.id }}",
+            "Fecha_Actualizacion": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Cotizacion_ID",
+              "displayName": "Cotizacion_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Solicitud_ID",
+              "displayName": "Solicitud_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ticket",
+              "displayName": "Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cotizacion_Detalle",
+              "displayName": "Cotizacion_Detalle",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Descripcion_Solicitud",
+              "displayName": "Descripcion_Solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tipo_Cotizacion",
+              "displayName": "Tipo_Cotizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Automatica",
+                  "value": "Automatica"
+                },
+                {
+                  "name": "Evaluacion_Humana",
+                  "value": "Evaluacion_Humana"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Borrador",
+                  "value": "Borrador"
+                },
+                {
+                  "name": "Pendiente_Evaluacion",
+                  "value": "Pendiente_Evaluacion"
+                },
+                {
+                  "name": "Pendiente_Aprobacion",
+                  "value": "Pendiente_Aprobacion"
+                },
+                {
+                  "name": "Enviada",
+                  "value": "Enviada"
+                },
+                {
+                  "name": "Aprobada",
+                  "value": "Aprobada"
+                },
+                {
+                  "name": "Rechazada",
+                  "value": "Rechazada"
+                },
+                {
+                  "name": "Cancelada",
+                  "value": "Cancelada"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Moneda",
+              "displayName": "Moneda",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "ARS",
+                  "value": "ARS"
+                },
+                {
+                  "name": "USD",
+                  "value": "USD"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Subtotal",
+              "displayName": "Subtotal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Actualizacion",
+              "displayName": "Fecha_Actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Aprobacion",
+              "displayName": "Fecha_Aprobacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Responsable_Evaluacion",
+              "displayName": "Responsable_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Resultado_Evaluacion",
+              "displayName": "Resultado_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notificacion_Enviada",
+              "displayName": "Notificacion_Enviada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "HubSpot_Deal_ID",
+              "displayName": "HubSpot_Deal_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Trace_ID",
+              "displayName": "Trace_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Evaluaciones_IA",
+              "displayName": "Evaluaciones_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado_Sync_HubSpot",
+              "displayName": "Estado_Sync_HubSpot",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Sincronizado",
+                  "value": "Sincronizado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        6240,
+        -800
+      ],
+      "id": "b8917081-636a-41d1-9aea-edc6c04d8b63",
+      "name": "Notificacion comercial enviada"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce812d83-3a51-440f-84e9-13516e447c7d",
+              "name": "solicitud_id",
+              "value": "={{ $('Worker Comercial').first().json.solicitud_id }}",
+              "type": "string"
+            },
+            {
+              "id": "dcf74fca-127b-441d-a0d2-4a1c9c3373b5",
+              "name": "=cotizacion_record_id",
+              "value": "={{$('Crear cotizacion manual').first().json.id}}",
+              "type": "string"
+            },
+            {
+              "id": "e8b017e5-818a-4b9d-ad61-e5a833df8f73",
+              "name": "estado",
+              "value": "={{ $json.fields.Estado }}",
+              "type": "string"
+            },
+            {
+              "id": "252e7920-5fd5-4f75-9f7b-c7beea7d1b7a",
+              "name": "requiere_revision",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "a21255d4-f630-41b3-b503-1fde5bf0ad52",
+              "name": "notificacion_enviada",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "8dee835d-79a0-413d-bfa3-abbf1d9d49ff",
+              "name": "mensaje",
+              "value": "={{ 'Tu solicitud fue registrada correctamente y enviada al área comercial para su evaluación. Te informaremos cuando esté disponible la cotización.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        6432,
+        -800
+      ],
+      "id": "d2705c3f-252c-4911-98af-0e4f749e66cb",
+      "name": "Respuesta cotizacion pendiente"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "97d01e62-54be-49d1-bd6d-791b68bd65bd",
+              "name": "solicitud_id",
+              "value": "={{ $('Worker Comercial').first().json.solicitud_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5c3691f8-7170-4980-98d1-335f1c81d2db",
+              "name": "estado",
+              "value": "={{ 'Datos_Invalidos' }}",
+              "type": "string"
+            },
+            {
+              "id": "e405b28a-5043-48c6-bf13-c101f16c1d36",
+              "name": "exito",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "e159aef0-3359-4ba1-b20f-abe67110b124",
+              "name": "requiere_revision",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "186587b4-9875-4f89-8317-9c89ea047f5c",
+              "name": "mensaje",
+              "value": "={{ 'No fue posible registrar la cotización porque faltan datos obligatorios o algunos valores no son válidos. La solicitud requiere corrección.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        4896,
+        -704
+      ],
+      "id": "1eee1eed-cd10-4686-a7c8-ecdeb5760c40",
+      "name": "Respuesta datos invalidos"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "97d01e62-54be-49d1-bd6d-791b68bd65bd",
+              "name": "solicitud_id",
+              "value": "={{ $json.fields.Solicitud_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "5c3691f8-7170-4980-98d1-335f1c81d2db",
+              "name": "cotizacion_record_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e405b28a-5043-48c6-bf13-c101f16c1d36",
+              "name": "estado",
+              "value": "={{ $json.fields.Estado }}",
+              "type": "string"
+            },
+            {
+              "id": "e159aef0-3359-4ba1-b20f-abe67110b124",
+              "name": "exito",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "186587b4-9875-4f89-8317-9c89ea047f5c",
+              "name": "cotizacion_existente",
+              "value": "true",
+              "type": "boolean"
+            },
+            {
+              "id": "1c3e09d1-f982-42ac-9bbe-4cd408249a81",
+              "name": "mensaje",
+              "value": "={{ 'Esta solicitud ya tiene una cotización registrada. No se generó una nueva.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        5280,
+        -1024
+      ],
+      "id": "ecab0f5e-1a7e-4b27-a108-3988d2694375",
+      "name": "Respuesta cotización existente"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000008",
+          "mode": "list",
+          "cachedResultName": "Cotizacion_Detalle"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Detalle_ID": "={{ 'DET-' + $('Worker Comercial').first().json.solicitud_id }}",
+            "Descripcion": "={{ $('Worker Comercial').first().json.descripcion_solicitud }}",
+            "Cotizacion": "={{ [$('Crear cotizacion manual').first().json.id] }}",
+            "Servicio": "={{ [$('Cotizacion manual').first().json.servicio_record_id] }}",
+            "Moneda": "ARS"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Detalle_ID",
+              "displayName": "Detalle_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cotizacion",
+              "displayName": "Cotizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Servicio",
+              "displayName": "Servicio",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Descripcion",
+              "displayName": "Descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cantidad_Horas",
+              "displayName": "Cantidad_Horas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tarifa_Hora_Aplicada",
+              "displayName": "Tarifa_Hora_Aplicada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Importe",
+              "displayName": "Importe",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Moneda",
+              "displayName": "Moneda",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "ARS",
+                  "value": "ARS"
+                },
+                {
+                  "name": "USD",
+                  "value": "USD"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nombre_Servicio_Aplicado",
+              "displayName": "Nombre_Servicio_Aplicado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Servicio_ID_Aplicado",
+              "displayName": "Servicio_ID_Aplicado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Modalidad_Aplicada",
+              "displayName": "Modalidad_Aplicada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Por_Horas",
+                  "value": "Por_Horas"
+                },
+                {
+                  "name": "Precio_Fijo",
+                  "value": "Precio_Fijo"
+                },
+                {
+                  "name": "Cotizacion_Manual",
+                  "value": "Cotizacion_Manual"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Precio_Fijo_Aplicado",
+              "displayName": "Precio_Fijo_Aplicado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        5728,
+        -800
+      ],
+      "id": "50528d56-b91f-4edd-ae7a-4c648899c441",
+      "name": "Crear detalle cotizacion manual"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "=tbl00000000000006",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Notificacion_Enviada": false,
+            "Cotizacion_ID": "={{ 'COT-' + $('Worker Comercial').first().json.solicitud_id }}",
+            "Solicitud_ID": "={{ $('Worker Comercial').first().json.solicitud_id }}",
+            "Empresa": "={{ [$('Worker Comercial').first().json.empresa_record_id] }}",
+            "Contacto": "={{ [$('Worker Comercial').first().json.contacto_record_id] }}",
+            "Descripcion_Solicitud": "={{ $('Worker Comercial').first().json.descripcion_solicitud }}",
+            "Estado": "={{\n  $('Cotizacion manual').isExecuted\n    ? 'Pendiente_Evaluacion'\n    : 'Borrador'\n}}",
+            "Subtotal": "={{\n  $('Calcular precio por hora').isExecuted\n    ? $('Calcular precio por hora').first().json.importe_total\n    : $('Calcular precio fijo').isExecuted\n      ? $('Calcular precio fijo').first().json.importe_total\n      : null\n}}",
+            "Total": "={{\n  $('Calcular precio por hora').isExecuted\n    ? $('Calcular precio por hora').first().json.importe_total\n    : $('Calcular precio fijo').isExecuted\n      ? $('Calcular precio fijo').first().json.importe_total\n      : null\n}}",
+            "Observaciones": "={{ $('Cotizacion manual').isExecuted   ? 'Cotización pendiente de evaluación y asignación de precio por un responsable comercial.'   : 'Cotización calculada automáticamente según el catálogo de servicios.' }}",
+            "Moneda": "ARS",
+            "Fecha_Actualizacion": "={{ $now.toISO() }}",
+            "Fecha": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Cotizacion_ID",
+              "displayName": "Cotizacion_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Solicitud_ID",
+              "displayName": "Solicitud_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ticket",
+              "displayName": "Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cotizacion_Detalle",
+              "displayName": "Cotizacion_Detalle",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Descripcion_Solicitud",
+              "displayName": "Descripcion_Solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tipo_Cotizacion",
+              "displayName": "Tipo_Cotizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Automatica",
+                  "value": "Automatica"
+                },
+                {
+                  "name": "Evaluacion_Humana",
+                  "value": "Evaluacion_Humana"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Borrador",
+                  "value": "Borrador"
+                },
+                {
+                  "name": "Pendiente_Evaluacion",
+                  "value": "Pendiente_Evaluacion"
+                },
+                {
+                  "name": "Pendiente_Aprobacion",
+                  "value": "Pendiente_Aprobacion"
+                },
+                {
+                  "name": "Enviada",
+                  "value": "Enviada"
+                },
+                {
+                  "name": "Aprobada",
+                  "value": "Aprobada"
+                },
+                {
+                  "name": "Rechazada",
+                  "value": "Rechazada"
+                },
+                {
+                  "name": "Cancelada",
+                  "value": "Cancelada"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Moneda",
+              "displayName": "Moneda",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "ARS",
+                  "value": "ARS"
+                },
+                {
+                  "name": "USD",
+                  "value": "USD"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Subtotal",
+              "displayName": "Subtotal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Actualizacion",
+              "displayName": "Fecha_Actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Aprobacion",
+              "displayName": "Fecha_Aprobacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Responsable_Evaluacion",
+              "displayName": "Responsable_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Resultado_Evaluacion",
+              "displayName": "Resultado_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Notificacion_Enviada",
+              "displayName": "Notificacion_Enviada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "HubSpot_Deal_ID",
+              "displayName": "HubSpot_Deal_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Trace_ID",
+              "displayName": "Trace_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Evaluaciones_IA",
+              "displayName": "Evaluaciones_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado_Sync_HubSpot",
+              "displayName": "Estado_Sync_HubSpot",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Sincronizado",
+                  "value": "Sincronizado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        5536,
+        -592
+      ],
+      "id": "ecf126ea-bf28-4f07-8fc7-1bac58251eb5",
+      "name": "Crear cotizacion automatica"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000008",
+          "mode": "list",
+          "cachedResultName": "Cotizacion_Detalle"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Detalle_ID": "={{ 'DET-' + $('Worker Comercial').first().json.solicitud_id }}",
+            "Descripcion": "={{ $('Worker Comercial').first().json.descripcion_solicitud }}",
+            "Cotizacion": "={{ [$('Crear cotizacion automatica').first().json.id] }}",
+            "Moneda": "ARS",
+            "Observaciones": "={{ 'Cotización calculada automáticamente' }}",
+            "Servicio": "={{\n  $('Calcular precio por hora').isExecuted\n    ? [$('Calcular precio por hora').first().json.servicio_record_id]\n    : [$('Calcular precio fijo').first().json.servicio_record_id]\n}}",
+            "Cantidad_Horas": "={{\n  $('Calcular precio por hora').isExecuted\n    ? $('Calcular precio por hora').first().json.horas_estimadas\n      * $('Calcular precio por hora').first().json.cantidad\n    : null\n}}",
+            "Tarifa_Hora_Aplicada": "={{\n  $('Calcular precio por hora').isExecuted\n    ? $('Calcular precio por hora').first().json.tarifa_hora\n    : null\n}}",
+            "Importe": "={{\n  $('Calcular precio por hora').isExecuted\n    ? $('Calcular precio por hora').first().json.importe_total\n    : $('Calcular precio fijo').first().json.importe_total\n}}",
+            "Nombre_Servicio_Aplicado": "={{ $('Calcular precio por hora').isExecuted ? $('Calcular precio por hora').first().json.nombre_servicio : $('Calcular precio fijo').first().json.nombre_servicio }}",
+            "Servicio_ID_Aplicado": "={{ $('Calcular precio por hora').isExecuted ? $('Calcular precio por hora').first().json.servicio_id : $('Calcular precio fijo').first().json.servicio_id }}",
+            "Modalidad_Aplicada": "={{\n  $('Calcular precio por hora').isExecuted\n    ? 'Por_Horas'\n    : $('Calcular precio fijo').isExecuted\n      ? 'Precio_Fijo'\n      : null\n}}",
+            "Precio_Fijo_Aplicado": "={{ $('Calcular precio fijo').isExecuted ? $('Calcular precio fijo').first().json.precio_unitario : null }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Detalle_ID",
+              "displayName": "Detalle_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cotizacion",
+              "displayName": "Cotizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Servicio",
+              "displayName": "Servicio",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Descripcion",
+              "displayName": "Descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cantidad_Horas",
+              "displayName": "Cantidad_Horas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tarifa_Hora_Aplicada",
+              "displayName": "Tarifa_Hora_Aplicada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Importe",
+              "displayName": "Importe",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Moneda",
+              "displayName": "Moneda",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "ARS",
+                  "value": "ARS"
+                },
+                {
+                  "name": "USD",
+                  "value": "USD"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nombre_Servicio_Aplicado",
+              "displayName": "Nombre_Servicio_Aplicado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Servicio_ID_Aplicado",
+              "displayName": "Servicio_ID_Aplicado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Modalidad_Aplicada",
+              "displayName": "Modalidad_Aplicada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Por_Horas",
+                  "value": "Por_Horas"
+                },
+                {
+                  "name": "Precio_Fijo",
+                  "value": "Precio_Fijo"
+                },
+                {
+                  "name": "Cotizacion_Manual",
+                  "value": "Cotizacion_Manual"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Precio_Fijo_Aplicado",
+              "displayName": "Precio_Fijo_Aplicado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        5728,
+        -592
+      ],
+      "id": "44333f74-47f6-433f-b9f6-1e5cb9128b37",
+      "name": "Crear detalle cotizacion automatica"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82ecf959-f7c3-4660-9437-1c8a3de775ba",
+              "name": "solicitud_id",
+              "value": "={{ $('Worker Comercial').first().json.solicitud_id }}",
+              "type": "string"
+            },
+            {
+              "id": "0302cea2-305e-4474-bcf9-b2e2e270311e",
+              "name": "cotizacion_record_id",
+              "value": "={{ $('Crear cotizacion automatica').first().json.id.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "e9bfe01b-f0e5-4108-9f5e-cdbd14e34014",
+              "name": "estado",
+              "value": "={{ $('Crear cotizacion automatica').item.json.fields.Estado }}",
+              "type": "string"
+            },
+            {
+              "id": "b2b7a5da-980b-4cba-9289-a232784ec0b0",
+              "name": "exito",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "d355eb90-4c6e-4033-bdfb-85e184d30123",
+              "name": "requiere_revision",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "40d8c184-a77e-4ca2-8593-c8f37167da6d",
+              "name": "cotizacion_existente",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "797339eb-364e-4c30-944e-d745a6a8f50c",
+              "name": "importe_total",
+              "value": "={{   $('Calcular precio por hora').isExecuted     ? $('Calcular precio por hora').first().json.importe_total     : $('Calcular precio fijo').isExecuted       ? $('Calcular precio fijo').first().json.importe_total       : null }}",
+              "type": "number"
+            },
+            {
+              "id": "92cbcb9d-1f81-48b7-b667-d4bcb89bfa5a",
+              "name": "moneda",
+              "value": "={{ $('Crear cotizacion automatica').item.json.fields.Moneda }}",
+              "type": "string"
+            },
+            {
+              "id": "5b70c488-57d6-4b3b-ab52-1cab179d68c1",
+              "name": "mensaje",
+              "value": "={{ 'La cotización fue calculada y registrada correctamente. Está pendiente de aprobación o envío.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        5952,
+        -592
+      ],
+      "id": "695329c2-20ca-4d70-a94e-b281b93ca208",
+      "name": "Respuesta cotizaciones automaticas"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "03c9c0ba-f947-417c-acd7-7c0569bbd06d",
+              "leftValue": "={{ $json.total }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        7040,
+        -592
+      ],
+      "id": "5f41dbdf-6a1c-4f22-9958-1364f54f3f74",
+      "name": "¿Existe Deal?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"filterGroups\": [\n    {\n      \"filters\": [\n        {\n          \"propertyName\": \"email\",\n          \"operator\": \"EQ\",\n          \"value\": \"{{ $('Buscar usuario Airtable').item.json.fields.Email }}\"\n        }\n      ]\n    }\n  ],\n  \"properties\": [\"email\", \"firstname\", \"lastname\"],\n  \"limit\": 2\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1952,
+        -224
+      ],
+      "id": "fc283fde-18e5-4361-85b1-7d5c834f75a6",
+      "name": "Buscar contacto API"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/deals/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n  \"filterGroups\": [\n    {\n      \"filters\": [\n        {\n          \"propertyName\": \"novadeskia_solicitud_id\",\n          \"operator\": \"EQ\",\n          \"value\": \"{{ $('Worker Comercial').first().json.solicitud_id }}\"\n        }\n      ]\n    }\n  ],\n  \"properties\": [\n    \"dealname\",\n    \"dealstage\",\n    \"pipeline\",\n    \"amount\",\n    \"novadeskia_solicitud_id\"\n  ],\n  \"limit\": 2\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        6864,
+        -592
+      ],
+      "id": "1504c0ae-ad74-4dad-b976-ae0d3a89ee2c",
+      "name": "Buscar Deal por solicitud HTTP"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/deals",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n  \"properties\": {\n    \"dealname\": \"NovaDesk - {{ $('Worker Comercial').first().json.solicitud_id }}\",\n    \"pipeline\": \"default\",\n    \"dealstage\": \"1488892465\",\n    \"novadeskia_solicitud_id\": \"{{ $('Worker Comercial').first().json.solicitud_id }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        7232,
+        -496
+      ],
+      "id": "4f548c68-898c-47ab-b8eb-21f80d84c83c",
+      "name": "Crear Deal en HUSPOT"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{\n  'https://api.hubapi.com/crm/v4/objects/deals/'\n  + (\n      $('Crear Deal en HUSPOT').isExecuted\n        ? $('Crear Deal en HUSPOT').first().json.id\n        : $('Buscar Deal por solicitud HTTP').first().json.results[0].id\n    )\n  + '/associations/default/companies/'\n  + (\n      $('unificar informacion').isExecuted\n        ? $('unificar informacion').first().json.hubspot_company_id\n        : $('unificar informacion 2').isExecuted\n          ? $('unificar informacion 2').first().json.hubspot_company_id\n          : $('unificar informacion 3').first().json.hubspot_company_id\n    )\n}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        7488,
+        -608
+      ],
+      "id": "d513c456-a575-4d94-b9d9-2756befea1c6",
+      "name": "Asociar Deal a empresa"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=\n{{\n  'https://api.hubapi.com/crm/v4/objects/deals/'\n  + (\n      $('Crear Deal en HUSPOT').isExecuted\n        ? $('Crear Deal en HUSPOT').first().json.id\n        : $('Buscar Deal por solicitud HTTP').first().json.results[0].id\n    )\n  + '/associations/default/contacts/'\n  + $('Buscar usuario Airtable').first().json.fields.HubSpot_Contact_ID\n}}\n",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        7712,
+        -608
+      ],
+      "id": "5604a148-474c-48f1-b54f-4329a3b3557a",
+      "name": "Asociar Deal a contacto"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000006",
+          "mode": "list",
+          "cachedResultName": "Cotizaciones"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{   $('Crear cotizacion automatica').isExecuted     ? $('Crear cotizacion automatica').first().json.id     : $('Crear cotizacion manual').first().json.id }}",
+            "HubSpot_Deal_ID": "={{   String(     $('Crear Deal en HUSPOT').isExecuted       ? $('Crear Deal en HUSPOT').first().json.id       : $('Buscar Deal por solicitud HTTP').first().json.results[0].id   ) }}",
+            "Estado_Sync_HubSpot": "Sincronizado"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Cotizacion_ID",
+              "displayName": "Cotizacion_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Solicitud_ID",
+              "displayName": "Solicitud_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ticket",
+              "displayName": "Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cotizacion_Detalle",
+              "displayName": "Cotizacion_Detalle",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Descripcion_Solicitud",
+              "displayName": "Descripcion_Solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tipo_Cotizacion",
+              "displayName": "Tipo_Cotizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Automatica",
+                  "value": "Automatica"
+                },
+                {
+                  "name": "Evaluacion_Humana",
+                  "value": "Evaluacion_Humana"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Borrador",
+                  "value": "Borrador"
+                },
+                {
+                  "name": "Pendiente_Evaluacion",
+                  "value": "Pendiente_Evaluacion"
+                },
+                {
+                  "name": "Pendiente_Aprobacion",
+                  "value": "Pendiente_Aprobacion"
+                },
+                {
+                  "name": "Enviada",
+                  "value": "Enviada"
+                },
+                {
+                  "name": "Aprobada",
+                  "value": "Aprobada"
+                },
+                {
+                  "name": "Rechazada",
+                  "value": "Rechazada"
+                },
+                {
+                  "name": "Cancelada",
+                  "value": "Cancelada"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Moneda",
+              "displayName": "Moneda",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "ARS",
+                  "value": "ARS"
+                },
+                {
+                  "name": "USD",
+                  "value": "USD"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Subtotal",
+              "displayName": "Subtotal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha_Actualizacion",
+              "displayName": "Fecha_Actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha_Aprobacion",
+              "displayName": "Fecha_Aprobacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Responsable_Evaluacion",
+              "displayName": "Responsable_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Resultado_Evaluacion",
+              "displayName": "Resultado_Evaluacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Notificacion_Enviada",
+              "displayName": "Notificacion_Enviada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "HubSpot_Deal_ID",
+              "displayName": "HubSpot_Deal_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Trace_ID",
+              "displayName": "Trace_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Evaluaciones_IA",
+              "displayName": "Evaluaciones_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado_Sync_HubSpot",
+              "displayName": "Estado_Sync_HubSpot",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Sincronizado",
+                  "value": "Sincronizado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        7936,
+        -608
+      ],
+      "id": "9c8ae221-3ba7-4002-9962-0b9794b1f36c",
+      "name": "Update record"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Pedido del cliente:\n{{ $('Worker Comercial').first().json.descripcion_solicitud }}\n\nCatálogo de servicios disponibles:\n{{ JSON.stringify($json.catalogo_servicios) }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Eres un clasificador de servicios comerciales de NovaDesk.\n\nTu única función es identificar qué servicio del catálogo corresponde a la solicitud del cliente.\n\nUtiliza exclusivamente los servicios incluidos en el catálogo proporcionado.\n\nNo inventes códigos, nombres ni servicios.\n\nCompara la solicitud del cliente con el nombre, descripción y categoría de cada servicio.\n\nSi existe una coincidencia clara y única, devuelve el Servicio_ID correspondiente.\n\nSi existen varias coincidencias posibles o la solicitud no contiene suficiente información, solicita una aclaración.\n\nSi no existe ningún servicio compatible, indica que no se encontró.\n\nResponde exclusivamente con un objeto JSON válido, sin Markdown ni explicaciones adicionales.\n\nFormato obligatorio:\n\n{\n  \"estado\": \"IDENTIFICADO\",\n  \"servicio_id\": \"CODIGO_DEL_CATALOGO\",\n  \"mensaje\": \"\"\n}\n\nValores permitidos para estado:\nIDENTIFICADO\nACLARACION\nNO_ENCONTRADO\n\nSi estado es ACLARACION o NO_ENCONTRADO, servicio_id debe ser una cadena vacía y mensaje debe explicar brevemente qué información necesita el cliente proporcionar.\n\nDebes devolver tu respuesta siguiendo exactamente la estructura definida por el Output Parser.\n\nEl campo estado solo puede contener IDENTIFICADO, ACLARACION o NO_ENCONTRADO.\n\nCuando estado sea IDENTIFICADO, servicio_id debe ser un código existente en el catálogo proporcionado.\n\nCuando estado sea ACLARACION o NO_ENCONTRADO, servicio_id debe estar vacío y mensaje debe explicar brevemente el motivo.\n\nNo inventes códigos de servicios."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        3568,
+        -416
+      ],
+      "id": "080d5e2a-6bc2-4586-ba12-08383af62a51",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000009",
+          "mode": "list",
+          "cachedResultName": "Servicios"
+        },
+        "filterByFormula": "={{ \"AND({Servicio_ID} = '\" + $('Basic LLM Chain').first().json.output.servicio_id + \"', {Activo} = 1)\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        3888,
+        -416
+      ],
+      "id": "3c79d48d-b911-47aa-a17f-57cf2a5852b2",
+      "name": "Buscar servicio Airtable1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "deepseek-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        -208
+      ],
+      "id": "1794e23c-42b3-46e3-8754-8cbeb5a61ed6",
+      "name": "DeepSeek Chat Model"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000009",
+          "mode": "list",
+          "cachedResultName": "Servicios"
+        },
+        "filterByFormula": "={Activo} = 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        3232,
+        -416
+      ],
+      "id": "e02de890-31e6-416f-a80e-4616e43939e3",
+      "name": "Listar servicios activos",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "catalogo_servicios",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3408,
+        -416
+      ],
+      "id": "380a29ef-9d10-4512-b861-2d2433716aee",
+      "name": "catalogo de servicios"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"output\": {\n    \"estado\": \"IDENTIFICADO\",\n    \"servicio_id\": \"SRV-012\",\n    \"mensaje\": \"\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3680,
+        -208
+      ],
+      "id": "68decfea-abf9-4608-83b1-d2b2b1ff1232",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.accion || 'crear' }}",
+                    "rightValue": "=crear",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "b2eb7848-6378-420a-9c42-fda04d6881e5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CREAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "37d94db8-9073-415e-a322-7350b15109c4",
+                    "leftValue": "={{ $json.accion || 'crear' }}",
+                    "rightValue": "consultar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CONSULTAR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        -752,
+        -48
+      ],
+      "id": "92552b9f-ea40-43eb-8e01-ac65d988da83",
+      "name": "Accion comercial"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000006",
+          "mode": "list",
+          "cachedResultName": "Cotizaciones"
+        },
+        "filterByFormula": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -544,
+        224
+      ],
+      "id": "77f893ed-8a75-47df-9b0f-a5e36bc15fe6",
+      "name": "buscar cotizaciones"
+    },
+    {
+      "parameters": {
+        "jsCode": "const contactoId = $('Worker Comercial').first().json.contacto_record_id;\nconst empresaId = $('Worker Comercial').first().json.empresa_record_id;\n\nconst cotizaciones = $input.all()\n  .filter(item => {\n    const campos = item.json.fields ?? {};\n\n    return (\n      (campos.Contacto ?? []).includes(contactoId) &&\n      (campos.Empresa ?? []).includes(empresaId)\n    );\n  })\n  .map(item => ({\n    cotizacion_id: item.json.fields.Cotizacion_ID,\n    estado: item.json.fields.Estado ?? 'Sin estado',\n    solicitud_id: item.json.fields.Solicitud_ID ?? ''\n  }));\n\nreturn [{\n  json: {\n    exito: true,\n    accion: 'consultar',\n    cantidad: cotizaciones.length,\n    cotizaciones\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        224
+      ],
+      "id": "8c47f056-e5b9-4ab6-aa2e-873b81672af4",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "¿Tiene HubSpot_Company_ID?": {
+      "main": [
+        [
+          {
+            "node": "Buscar empresa Hubspot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Consulta Empresa por CUIT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Worker Comercial": {
+      "main": [
+        [
+          {
+            "node": "Accion comercial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear empresa Hubspot": {
+      "main": [
+        [
+          {
+            "node": "Actualizar empresa Hubspot_ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Empresa por CUIT": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar empresa Airtable": {
+      "main": [
+        [
+          {
+            "node": "¿Tiene HubSpot_Company_ID?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Crear empresa Hubspot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acatualizar empresa Hubspot_ID desde Hubspot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar empresa Hubspot": {
+      "main": [
+        [
+          {
+            "node": "unificar informacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar empresa Hubspot_ID": {
+      "main": [
+        [
+          {
+            "node": "unificar informacion 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acatualizar empresa Hubspot_ID desde Hubspot": {
+      "main": [
+        [
+          {
+            "node": "unificar informacion 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unificar informacion": {
+      "main": [
+        [
+          {
+            "node": "Buscar usuario Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Tiene HubSpot_Contacto_ID?": {
+      "main": [
+        [
+          {
+            "node": "Buscar contacto Hubspot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar contacto API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Crear contacto Hubspot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Actualizar Contacto_Hubspot_ID2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unificar informacion 2": {
+      "main": [
+        [
+          {
+            "node": "Buscar usuario Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "unificar informacion 3": {
+      "main": [
+        [
+          {
+            "node": "Buscar usuario Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear contacto Hubspot": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Contacto_Hubspot_ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Contacto_Hubspot_ID1": {
+      "main": [
+        [
+          {
+            "node": "Hubspot id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Contacto_Hubspot_ID2": {
+      "main": [
+        [
+          {
+            "node": "Hubspot id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar usuario Airtable": {
+      "main": [
+        [
+          {
+            "node": "¿Empresa vinculada a contacto?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar contacto Hubspot": {
+      "main": [
+        [
+          {
+            "node": "Hubsspot id2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hubsspot id2": {
+      "main": [
+        [
+          {
+            "node": "Asociar contacto a una empresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hubspot id": {
+      "main": [
+        [
+          {
+            "node": "Asociar contacto a una empresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hubspot id1": {
+      "main": [
+        [
+          {
+            "node": "Asociar contacto a una empresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Empresa vinculada a contacto?": {
+      "main": [
+        [
+          {
+            "node": "¿Tiene HubSpot_Contacto_ID?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rechazo solicitud comercial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asociar contacto a una empresa": {
+      "main": [
+        [
+          {
+            "node": "Listar servicios activos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿servicio valido?": {
+      "main": [
+        [
+          {
+            "node": "Modalidad de precio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Servicio no disponible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modalidad de precio": {
+      "main": [
+        [
+          {
+            "node": "Calcular precio por hora",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Calcular precio fijo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cotizacion manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular precio por hora": {
+      "main": [
+        [
+          {
+            "node": "¿Datos de cotización Validos ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cotizacion manual": {
+      "main": [
+        [
+          {
+            "node": "¿Datos de cotización Validos ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Datos de cotización Validos ?": {
+      "main": [
+        [
+          {
+            "node": "Buscar cotizacion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta datos invalidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar cotizacion": {
+      "main": [
+        [
+          {
+            "node": "¿Cotizacion existente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Cotizacion existente?": {
+      "main": [
+        [
+          {
+            "node": "Respuesta cotización existente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "¿Requiere revision comercial?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular precio fijo": {
+      "main": [
+        [
+          {
+            "node": "¿Datos de cotización Validos ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Requiere revision comercial?": {
+      "main": [
+        [
+          {
+            "node": "Crear cotizacion manual",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crear cotizacion automatica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear cotizacion manual": {
+      "main": [
+        [
+          {
+            "node": "Crear detalle cotizacion manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalamiento comercial": {
+      "main": [
+        [
+          {
+            "node": "Notificar revision comercial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar revision comercial": {
+      "main": [
+        [
+          {
+            "node": "Notificacion comercial enviada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificacion comercial enviada": {
+      "main": [
+        [
+          {
+            "node": "Respuesta cotizacion pendiente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear detalle cotizacion manual": {
+      "main": [
+        [
+          {
+            "node": "Escalamiento comercial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear cotizacion automatica": {
+      "main": [
+        [
+          {
+            "node": "Crear detalle cotizacion automatica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear detalle cotizacion automatica": {
+      "main": [
+        [
+          {
+            "node": "Respuesta cotizaciones automaticas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta cotizacion pendiente": {
+      "main": [
+        [
+          {
+            "node": "Buscar Deal por solicitud HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta cotizaciones automaticas": {
+      "main": [
+        [
+          {
+            "node": "Buscar Deal por solicitud HTTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar contacto API": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Deal por solicitud HTTP": {
+      "main": [
+        [
+          {
+            "node": "¿Existe Deal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Existe Deal?": {
+      "main": [
+        [
+          {
+            "node": "Asociar Deal a empresa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crear Deal en HUSPOT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Deal en HUSPOT": {
+      "main": [
+        [
+          {
+            "node": "Asociar Deal a empresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asociar Deal a empresa": {
+      "main": [
+        [
+          {
+            "node": "Asociar Deal a contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Asociar Deal a contacto": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Buscar servicio Airtable1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar servicios activos": {
+      "main": [
+        [
+          {
+            "node": "catalogo de servicios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "catalogo de servicios": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar servicio Airtable1": {
+      "main": [
+        [
+          {
+            "node": "¿servicio valido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Accion comercial": {
+      "main": [
+        [
+          {
+            "node": "Buscar empresa Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "buscar cotizaciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar cotizaciones": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "id": "bl4d3QgsJVge8pmx",
+  "tags": []
+}

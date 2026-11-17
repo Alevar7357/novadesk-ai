@@ -1,0 +1,2264 @@
+{
+  "name": "Pre entrega 4 - 2 Workers tickets",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "crear",
+                    "rightValue": "={{ $json.accion }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f7cfbfee-057b-4771-af04-45c237b4d84f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CREAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "0a25db7c-5fe2-4bb1-bdad-35d080c69cbf",
+                    "leftValue": "buscar",
+                    "rightValue": "={{ $json.accion }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "BUSCAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "0e774eca-4c73-46ce-b5f7-9df63df7865c",
+                    "leftValue": "actualizar",
+                    "rightValue": "={{ $json.accion }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ACTUALIZAR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        -1040,
+        -112
+      ],
+      "id": "3bd4b309-6615-4b7d-92c6-d84fceb8cb69",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000010",
+          "mode": "list",
+          "cachedResultName": "Tickets"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Buscar_ticket').first().json.id }}",
+            "Prioridad": "={{ $('Worker_tickets').first().json.actualizar_prioridad === true ? $('Worker_tickets').first().json.prioridad : $('Buscar_ticket').first().json.fields.Prioridad }}",
+            "Observaciones": "={{ [$('Buscar_ticket').first().json.fields?.Observaciones, $('Worker_tickets').first().json.observaciones].filter(Boolean).join('\\n\\n') }}",
+            "Fecha_Actualizacion": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cotizaciones",
+              "displayName": "Cotizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Evaluaciones_IA",
+              "displayName": "Evaluaciones_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Usuario",
+              "displayName": "Usuario",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Descripcion",
+              "displayName": "Descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ventas",
+                  "value": "Ventas"
+                },
+                {
+                  "name": "Compras",
+                  "value": "Compras"
+                },
+                {
+                  "name": "Stock",
+                  "value": "Stock"
+                },
+                {
+                  "name": "Tesorería",
+                  "value": "Tesorería"
+                },
+                {
+                  "name": "Contabilidad",
+                  "value": "Contabilidad"
+                },
+                {
+                  "name": "Configuración",
+                  "value": "Configuración"
+                },
+                {
+                  "name": "Acceso",
+                  "value": "Acceso"
+                },
+                {
+                  "name": "Otros",
+                  "value": "Otros"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Prioridad",
+              "displayName": "Prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Baja",
+                  "value": "Baja"
+                },
+                {
+                  "name": "Media",
+                  "value": "Media"
+                },
+                {
+                  "name": "Alta",
+                  "value": "Alta"
+                },
+                {
+                  "name": "Critica",
+                  "value": "Critica"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Abierto",
+                  "value": "Abierto"
+                },
+                {
+                  "name": "En proceso",
+                  "value": "En proceso"
+                },
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Resuelto",
+                  "value": "Resuelto"
+                },
+                {
+                  "name": "Cerrado",
+                  "value": "Cerrado"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ChatID",
+              "displayName": "ChatID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Canal",
+              "displayName": "Canal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Telegram",
+                  "value": "Telegram"
+                },
+                {
+                  "name": "Email",
+                  "value": "Email"
+                },
+                {
+                  "name": "Web",
+                  "value": "Web"
+                },
+                {
+                  "name": "Otro",
+                  "value": "Otro"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Escalado_L2",
+              "displayName": "Escalado_L2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Resultado_Escalamiento",
+              "displayName": "Resultado_Escalamiento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Trace_ID",
+              "displayName": "Trace_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "FechaEscalamiento",
+              "displayName": "FechaEscalamiento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha_Actualizacion",
+              "displayName": "Fecha_Actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tipo_Solicitud",
+              "displayName": "Tipo_Solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Consulta",
+                  "value": "Consulta"
+                },
+                {
+                  "name": "Incidente",
+                  "value": "Incidente"
+                },
+                {
+                  "name": "Solicitud",
+                  "value": "Solicitud"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Numero_Ticket",
+              "displayName": "Numero_Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Codigo_Ticket",
+              "displayName": "Codigo_Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        288
+      ],
+      "id": "5158fd04-4133-46c0-96ef-08b584c8f36c",
+      "name": "Actualizar_ticket_AT"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "accion"
+            },
+            {
+              "name": "session_id"
+            },
+            {
+              "name": "ticket_id"
+            },
+            {
+              "name": "descripcion"
+            },
+            {
+              "name": "chat_id"
+            },
+            {
+              "name": "nombre_contacto"
+            },
+            {
+              "name": "empresa"
+            },
+            {
+              "name": "categoria"
+            },
+            {
+              "name": "prioridad"
+            },
+            {
+              "name": "observaciones"
+            },
+            {
+              "name": "actualizar_prioridad",
+              "type": "boolean"
+            },
+            {
+              "name": "tipo_solicitud"
+            },
+            {
+              "name": "cuit"
+            },
+            {
+              "name": "contacto_record_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1280,
+        -96
+      ],
+      "id": "bb509dc7-4148-483d-9a83-ada70c5e069d",
+      "name": "Worker_tickets"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "140a95e9-3a3f-472c-9840-6e8291ed9a9e",
+              "name": "ok",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "28e77d46-040b-4dcd-8f5b-69f962921679",
+              "name": "accion",
+              "value": "actualizar",
+              "type": "string"
+            },
+            {
+              "id": "42d31b43-0b42-4c0b-b01e-8c509f7727fe",
+              "name": "ticket_id",
+              "value": "={{ $('Buscar_ticket').first().json.fields.Codigo_Ticket }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6d0df9-5d66-46ec-ab7d-993696062b02",
+              "name": "ticket_actualizado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "4c4dba8c-77db-4d6e-ad71-587ca3023c72",
+              "name": "estado",
+              "value": "={{ $json.fields.Estado }}",
+              "type": "string"
+            },
+            {
+              "id": "f4a97f03-036f-49d0-b217-a98b2358be17",
+              "name": "mensaje",
+              "value": "={{ \"Ticket \" + $('Buscar_ticket').first().json.fields.Codigo_Ticket + \" actualizado correctamente.\" }}",
+              "type": "string"
+            },
+            {
+              "id": "d97f8a1d-9fa6-4d18-9231-a9f09f1cd923",
+              "name": "fecha_actualizacion",
+              "value": "={{ $json.fields.Fecha_Actualizacion }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        288,
+        288
+      ],
+      "id": "e3a37558-0a83-4d62-abc0-fde9f66e777b",
+      "name": "Respuesta_Actualizar"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000003",
+          "mode": "list",
+          "cachedResultName": "Empresas"
+        },
+        "filterByFormula": "={{ \"{CUIT}='\" + String($json.cuit ?? '').replace(/\\D/g, '') + \"'\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -752,
+        -464
+      ],
+      "id": "0397cc73-83d0-4938-9f5e-f03236c12a03",
+      "name": "Buscar_empresa_CUIT",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000002",
+          "mode": "list",
+          "cachedResultName": "Contactos"
+        },
+        "filterByFormula": "={{ \"RECORD_ID()='\" + $('Worker_tickets').first().json.contacto_record_id + \"'\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -288,
+        -560
+      ],
+      "id": "3580e334-2d36-490a-ba94-70cab87b455c",
+      "name": "Buscar_contacto_empresa",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "73bcdefb-c0e0-4356-ae12-ea2c9371273f",
+              "leftValue": "={{ ($json.fields?.Empresa ?? []).includes($('Buscar_empresa_CUIT').first().json.id) }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -80,
+        -560
+      ],
+      "id": "4f656e57-38cf-43f4-95c5-d2aa22073171",
+      "name": "Validar_empresa_contacto"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "5b8f0d12-b566-42df-a4f5-6f0868d1e376",
+              "leftValue": "={{ !!$json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -544,
+        -464
+      ],
+      "id": "d6b92bcb-d849-4db9-823f-64d18efc72b3",
+      "name": "Validar_empresa_encontrada"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000010",
+          "mode": "list",
+          "cachedResultName": "Tickets"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Escalado_L2": false,
+            "Empresa": "={{ [$('Buscar_empresa_CUIT').first().json.id] }}",
+            "Contacto": "={{ [$('Buscar_contacto_empresa').first().json.id] }}",
+            "Nombre": "={{ $('Worker_tickets').first().json.nombre_contacto }}",
+            "Descripcion": "={{ $('Worker_tickets').first().json.descripcion }}",
+            "Observaciones": "={{ $('Worker_tickets').item.json.observaciones }}",
+            "Categoria": "={{ $('Worker_tickets').item.json.categoria }}",
+            "Prioridad": "={{ $('Worker_tickets').item.json.prioridad }}",
+            "Estado": "Abierto",
+            "ChatID": "={{ $('Worker_tickets').item.json.chat_id }}",
+            "Canal": "Telegram",
+            "Session_ID": "={{ $('Worker_tickets').item.json.session_id }}",
+            "Fecha": "={{ $now.toISO() }}",
+            "Tipo_Solicitud": "={{ $('Worker_tickets').first().json.tipo_solicitud }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Contacto",
+              "displayName": "Contacto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cotizaciones",
+              "displayName": "Cotizaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Auditoria_Eventos",
+              "displayName": "Auditoria_Eventos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Evaluaciones_IA",
+              "displayName": "Evaluaciones_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Usuario",
+              "displayName": "Usuario",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Descripcion",
+              "displayName": "Descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Observaciones",
+              "displayName": "Observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ventas",
+                  "value": "Ventas"
+                },
+                {
+                  "name": "Compras",
+                  "value": "Compras"
+                },
+                {
+                  "name": "Stock",
+                  "value": "Stock"
+                },
+                {
+                  "name": "Tesorería",
+                  "value": "Tesorería"
+                },
+                {
+                  "name": "Contabilidad",
+                  "value": "Contabilidad"
+                },
+                {
+                  "name": "Configuración",
+                  "value": "Configuración"
+                },
+                {
+                  "name": "Acceso",
+                  "value": "Acceso"
+                },
+                {
+                  "name": "Otros",
+                  "value": "Otros"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Prioridad",
+              "displayName": "Prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Baja",
+                  "value": "Baja"
+                },
+                {
+                  "name": "Media",
+                  "value": "Media"
+                },
+                {
+                  "name": "Alta",
+                  "value": "Alta"
+                },
+                {
+                  "name": "Critica",
+                  "value": "Critica"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Abierto",
+                  "value": "Abierto"
+                },
+                {
+                  "name": "En proceso",
+                  "value": "En proceso"
+                },
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Resuelto",
+                  "value": "Resuelto"
+                },
+                {
+                  "name": "Cerrado",
+                  "value": "Cerrado"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ChatID",
+              "displayName": "ChatID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Canal",
+              "displayName": "Canal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Telegram",
+                  "value": "Telegram"
+                },
+                {
+                  "name": "Email",
+                  "value": "Email"
+                },
+                {
+                  "name": "Web",
+                  "value": "Web"
+                },
+                {
+                  "name": "Otro",
+                  "value": "Otro"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Escalado_L2",
+              "displayName": "Escalado_L2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Session_ID",
+              "displayName": "Session_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Resultado_Escalamiento",
+              "displayName": "Resultado_Escalamiento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Trace_ID",
+              "displayName": "Trace_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "FechaEscalamiento",
+              "displayName": "FechaEscalamiento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Actualizacion",
+              "displayName": "Fecha_Actualizacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tipo_Solicitud",
+              "displayName": "Tipo_Solicitud",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Consulta",
+                  "value": "Consulta"
+                },
+                {
+                  "name": "Incidente",
+                  "value": "Incidente"
+                },
+                {
+                  "name": "Solicitud",
+                  "value": "Solicitud"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Numero_Ticket",
+              "displayName": "Numero_Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Codigo_Ticket",
+              "displayName": "Codigo_Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        -640
+      ],
+      "id": "35578170-3862-4d9c-b1a1-62a859bdc110",
+      "name": "Crear_ticket",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d045244-9360-49f5-8d41-2b48dec8b428",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "1da3c631-b5e9-4a55-a3ee-3d52f994b12d",
+              "name": "codigo",
+              "value": "={{ 'EMPRESA_NO_ENCONTRADA' }}",
+              "type": "string"
+            },
+            {
+              "id": "162cac21-e6b2-4c45-8745-332d697ae6ed",
+              "name": "mensaje",
+              "value": "={{ 'No se encontró una empresa registrada con ese CUIT.' }}",
+              "type": "string"
+            },
+            {
+              "id": "bf6ec8ca-6de0-4445-81d4-a5233f46476e",
+              "name": "ticket_cerrado",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -288,
+        -368
+      ],
+      "id": "ba70f577-6b6d-4bd8-b5b1-3c701489e433",
+      "name": "Empresa_no_encontrada"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d045244-9360-49f5-8d41-2b48dec8b428",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "1da3c631-b5e9-4a55-a3ee-3d52f994b12d",
+              "name": "codigo",
+              "value": "={{ 'CONTACTO_NO_VALIDO' }}",
+              "type": "string"
+            },
+            {
+              "id": "162cac21-e6b2-4c45-8745-332d697ae6ed",
+              "name": "mensaje",
+              "value": "={{ 'No se pudo validar el contacto para la empresa insicada.' }}",
+              "type": "string"
+            },
+            {
+              "id": "bf6ec8ca-6de0-4445-81d4-a5233f46476e",
+              "name": "ticket_cerrado",
+              "value": false,
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        144,
+        -464
+      ],
+      "id": "66644b1e-a87a-428b-ba5f-126d3c830a91",
+      "name": "Contacto_no_encontrado"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ce9793a-9393-4160-b3e5-835169519706",
+              "name": "ok",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "78708526-2afe-4649-a377-0e1188c8b986",
+              "name": "accion",
+              "value": "crear",
+              "type": "string"
+            },
+            {
+              "id": "da0ba1ff-0a10-49c8-a79d-af5202d8559c",
+              "name": "ticket_creado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "8db075de-bc95-4369-b9f9-340a20ac2d3a",
+              "name": "ticket_id",
+              "value": "={{ $json.fields.Codigo_Ticket }}",
+              "type": "string"
+            },
+            {
+              "id": "5e93a3ac-a48c-479f-86c7-263c2a95ba23",
+              "name": "record_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "742184aa-d440-4b25-8e75-d6022b08b159",
+              "name": "estado",
+              "value": "={{ $json.fields.Estado }}",
+              "type": "string"
+            },
+            {
+              "id": "a2d48a4b-eee0-46a1-b856-cff981308c76",
+              "name": "mensaje",
+              "value": "={{ \"Ticket \" + $json.fields.Codigo_Ticket + \" creado correctamente. Estado: \" + $json.fields.Estado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        368,
+        -640
+      ],
+      "id": "1a9f816e-03be-432e-9512-4431a0c998cb",
+      "name": "Respuesta_crear"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "b24bf30f-f1fd-4477-8d88-b1bc8fda5a70",
+              "leftValue": "={{ !!String($('Worker_tickets').first().json.ticket_id ?? '').trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        208,
+        -208
+      ],
+      "id": "324a521b-eed8-48bb-8c11-da6f165d0394",
+      "name": "Tiene_ticket_id"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000010",
+          "mode": "list",
+          "cachedResultName": "Tickets"
+        },
+        "filterByFormula": "={{ \"{Codigo_Ticket}=\" + JSON.stringify($('Worker_tickets').first().json.ticket_id.trim()) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -336
+      ],
+      "id": "f6211379-3620-4cef-91d3-42008f5d8926",
+      "name": "Buscar_ticket_por_codigo"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000003",
+          "mode": "list",
+          "cachedResultName": "Empresas"
+        },
+        "filterByFormula": "={{ \"{CUIT}='\" + String($('Worker_tickets').first().json.cuit ?? '').replace(/\\D/g, '') + \"'\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -752,
+        -96
+      ],
+      "id": "86d54f7f-b997-424f-8071-6311f0f969dc",
+      "name": "Buscar_empresa_listado",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000002",
+          "mode": "list",
+          "cachedResultName": "Contactos"
+        },
+        "filterByFormula": "={{ \"LOWER({Nombre})=\" + JSON.stringify($('Worker_tickets').first().json.nombre_contacto.trim().toLowerCase()) }}",
+        "options": {},
+        "sort": {
+          "property": []
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        -144
+      ],
+      "id": "c6604676-78bf-4a00-b4c4-ce84e027ebc7",
+      "name": "Buscar_contacto_listado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "e2f1ba2c-fd34-424d-8afd-8840a91c94b5",
+              "leftValue": "={{ ($json.fields?.Empresa ?? []).includes($('Buscar_empresa_listado').first().json.id) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -48,
+        -144
+      ],
+      "id": "2966fdaa-48a3-4837-8b89-1dd77c6b97db",
+      "name": "validar_contacto_listado"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000010",
+          "mode": "list",
+          "cachedResultName": "Tickets"
+        },
+        "filterByFormula": "=={{ ($json.fields?.Tickets ?? []).length > 0\n  ? 'OR(' + $json.fields.Tickets.map(id => 'RECORD_ID()=' + JSON.stringify(id)).join(',') + ')'\n  : 'FALSE()'\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -112
+      ],
+      "id": "5d0270ff-ea09-46d7-b2fc-4f3a0ad5067d",
+      "name": "listar_tickets_contacto"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\n\nconst registros = $input.all();\n\nconst tickets = registros\n  .filter(item => item.json.fields?.Codigo_Ticket)\n  .map(item => ({\n    ticket_id: item.json.fields.Codigo_Ticket,\n    record_id: item.json.id,\n    estado: item.json.fields.Estado ?? \"\",\n    descripcion: item.json.fields.Descripcion ?? \"\",\n    prioridad: item.json.fields.Prioridad ?? \"\"\n  }));\n\nreturn [{\n  json: {\n    ok: true,\n    accion: \"buscar\",\n    tipo: \"listado\",\n    cantidad: tickets.length,\n    tickets: tickets,\n    mensaje: tickets.length > 0\n      ? `Se encontraron ${tickets.length} tickets.`\n      : \"No se encontraron tickets para este contacto.\"\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        -64
+      ],
+      "id": "26b10562-cb86-441f-8312-9bc8f76af324",
+      "name": "Respuesta_listar_tickets"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "140a95e9-3a3f-472c-9840-6e8291ed9a9e",
+              "name": "ok",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "28e77d46-040b-4dcd-8f5b-69f962921679",
+              "name": "accion",
+              "value": "buscar",
+              "type": "string"
+            },
+            {
+              "id": "67602c1b-8d1b-4ee0-b5fb-b79ef4d52d98",
+              "name": "encontrado",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "42d31b43-0b42-4c0b-b01e-8c509f7727fe",
+              "name": "ticket_id",
+              "value": "={{ $json.fields.Codigo_Ticket }}",
+              "type": "string"
+            },
+            {
+              "id": "788fe1b7-b74b-41c2-98cc-b70a771b54e8",
+              "name": "record_id",
+              "value": "={{ $json.id}}",
+              "type": "string"
+            },
+            {
+              "id": "4c4dba8c-77db-4d6e-ad71-587ca3023c72",
+              "name": "categoria",
+              "value": "={{ $json.fields.Categoria }}",
+              "type": "string"
+            },
+            {
+              "id": "73aaa5b3-6450-49f2-bd43-7c6669280a45",
+              "name": "estado",
+              "value": "={{ $json.fields.Estado }}",
+              "type": "string"
+            },
+            {
+              "id": "a9484af1-3c2e-4fc7-ab2e-65c125f43098",
+              "name": "descripcion",
+              "value": "={{ $json.fields.Descripcion }}",
+              "type": "string"
+            },
+            {
+              "id": "fc657bdd-5fd6-4096-9399-530687641e2a",
+              "name": "prioridad",
+              "value": "={{ $json.fields.Prioridad }}",
+              "type": "string"
+            },
+            {
+              "id": "029f0a61-4839-406f-b10a-c24768669e2f",
+              "name": "mensaje",
+              "value": "={{ \"Ticket \" + $json.fields.Codigo_Ticket + \" encontrado correctamente\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        960,
+        -464
+      ],
+      "id": "46e99cff-0b09-478f-9f40-d9fe5c5d6eb3",
+      "name": "Respuesta_ticket_autorizado"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "140a95e9-3a3f-472c-9840-6e8291ed9a9e",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "28e77d46-040b-4dcd-8f5b-69f962921679",
+              "name": "accion",
+              "value": "buscar",
+              "type": "string"
+            },
+            {
+              "id": "67602c1b-8d1b-4ee0-b5fb-b79ef4d52d98",
+              "name": "encontrado",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "42d31b43-0b42-4c0b-b01e-8c509f7727fe",
+              "name": "codigo_error",
+              "value": "={{ 'TICKET_NO_AUTORIZADO' }}",
+              "type": "string"
+            },
+            {
+              "id": "029f0a61-4839-406f-b10a-c24768669e2f",
+              "name": "mensaje",
+              "value": "={{ 'No se encontró un ticket asociado a este contacto y empresa.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        976,
+        -256
+      ],
+      "id": "44e67e72-ae91-4f13-96bc-66fa6cbd7c80",
+      "name": "Respuesta_ticket_no_autorizado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "a628efd4-d6f0-42a8-b68c-23c64c5f11a6",
+              "leftValue": "={{ ($json.fields?.Contacto ?? []).includes($('Buscar_contacto_listado').first().json.id) && ($json.fields?.Empresa ?? []).includes($('Buscar_empresa_listado').first().json.id) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        736,
+        -336
+      ],
+      "id": "9b29538c-cadd-4349-ba74-1f841b4d841a",
+      "name": "Validar_propietario_ticket"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "140a95e9-3a3f-472c-9840-6e8291ed9a9e",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "28e77d46-040b-4dcd-8f5b-69f962921679",
+              "name": "accion",
+              "value": "buscar",
+              "type": "string"
+            },
+            {
+              "id": "42d31b43-0b42-4c0b-b01e-8c509f7727fe",
+              "name": "codigo_error",
+              "value": "={{ 'CONTACTO_NO_VALIDO' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "d2d9523f-5932-4a90-a9e1-1baf5fc4538f",
+      "name": "Respuesta_contacto_no_validado"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "a417af0b-3108-47c3-8201-c543841936c5",
+              "leftValue": "={{ !!$json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -528,
+        -96
+      ],
+      "id": "43776e20-1f05-4db8-84e2-56a48940c36a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8159fbd0-52a8-4c3d-970a-054e9d731008",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "b7559d93-ba27-4106-beaf-c651170e541d",
+              "name": "accion",
+              "value": "buscar",
+              "type": "string"
+            },
+            {
+              "id": "021b7979-0ecb-49d6-ac6e-b7c8048ca849",
+              "name": "codigo_error",
+              "value": "={{ \t'EMPRESA_NO_ENCONTRADA' }}",
+              "type": "string"
+            },
+            {
+              "id": "79016354-e12d-4b4a-98c5-e2fe34f51160",
+              "name": "mensaje",
+              "value": "={{'No se encontró una empresa con los datos indicados.'}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -304,
+        64
+      ],
+      "id": "7a87f33a-923f-4c9a-a729-d9d111cbb1e3",
+      "name": "Respuesta_empresa_no_encontrada."
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000010",
+          "mode": "list",
+          "cachedResultName": "Tickets"
+        },
+        "filterByFormula": "={{ \"{Codigo_Ticket}='\" + String($('Worker_tickets').first().json.ticket_id ?? '').trim() + \"'\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -752,
+        384
+      ],
+      "id": "feaa338d-0657-4ffc-858b-763a059e79a5",
+      "name": "Buscar_ticket"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000003",
+          "mode": "list",
+          "cachedResultName": "Empresas"
+        },
+        "filterByFormula": "={{ \"{CUIT}='\" + String($('Worker_tickets').first().json.cuit ?? '').replace(/\\D/g, '') + \"'\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -576,
+        384
+      ],
+      "id": "83eb6cbb-5e4e-4a0f-9ade-43f00e80f1c3",
+      "name": "Buscar_empresa_actualizar",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app00000000000001",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl00000000000002",
+          "mode": "list",
+          "cachedResultName": "Contactos"
+        },
+        "filterByFormula": "={{ \"RECORD_ID()='\" + $('Worker_tickets').first().json.contacto_record_id + \"'\" }}",
+        "options": {},
+        "sort": {
+          "property": []
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -368,
+        384
+      ],
+      "id": "12e04df6-2780-4b7f-ab08-f56e9ced1ec1",
+      "name": "Buscar_contacto_actualizar",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "5b42f8d5-f506-4f11-91e9-f786c831bd01",
+              "leftValue": "={{ !!$('Buscar_ticket').first().json.id && ($('Buscar_ticket').first().json.fields?.Contacto ?? []).includes($('Buscar_contacto_actualizar').first().json.id) && ($('Buscar_ticket').first().json.fields?.Empresa ?? []).includes($('Buscar_empresa_actualizar').first().json.id) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -160,
+        384
+      ],
+      "id": "6fd8f7f2-102a-49de-9a4f-15ac4baec82f",
+      "name": "Validar_propietario_actualizar"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4bfd895a-98a2-4655-a012-920b733c25c8",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "6570d643-4062-4bdb-9812-bb30e4e74383",
+              "name": "accion",
+              "value": "actualizar",
+              "type": "string"
+            },
+            {
+              "id": "d9ef71a7-8f4f-40c7-aad0-f3b24eafd266",
+              "name": "ticket_actualizado",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "e9839eed-731c-44fa-9682-e6e051362f8c",
+              "name": "codigo_error",
+              "value": "={{ 'TICKET_NO_DISPONIBLE' }}",
+              "type": "string"
+            },
+            {
+              "id": "a13024a0-26f7-4f2f-b804-638200e64b86",
+              "name": "mensaje",
+              "value": "={{ 'No se encontró un ticket asociado a este contacto y empresa.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        80,
+        512
+      ],
+      "id": "12288ee5-57dd-4c53-918b-09d7ccb50fbd",
+      "name": "Validar_propietario_actualizar1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Buscar_empresa_CUIT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar_empresa_listado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar_ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Worker_tickets": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar_ticket_AT": {
+      "main": [
+        [
+          {
+            "node": "Respuesta_Actualizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_empresa_CUIT": {
+      "main": [
+        [
+          {
+            "node": "Validar_empresa_encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_contacto_empresa": {
+      "main": [
+        [
+          {
+            "node": "Validar_empresa_contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar_empresa_contacto": {
+      "main": [
+        [
+          {
+            "node": "Crear_ticket",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Contacto_no_encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar_empresa_encontrada": {
+      "main": [
+        [
+          {
+            "node": "Buscar_contacto_empresa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Empresa_no_encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear_ticket": {
+      "main": [
+        [
+          {
+            "node": "Respuesta_crear",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene_ticket_id": {
+      "main": [
+        [
+          {
+            "node": "Buscar_ticket_por_codigo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "listar_tickets_contacto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_ticket_por_codigo": {
+      "main": [
+        [
+          {
+            "node": "Validar_propietario_ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_empresa_listado": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_contacto_listado": {
+      "main": [
+        [
+          {
+            "node": "validar_contacto_listado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta_crear": {
+      "main": [
+        []
+      ]
+    },
+    "validar_contacto_listado": {
+      "main": [
+        [
+          {
+            "node": "Tiene_ticket_id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta_contacto_no_validado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "listar_tickets_contacto": {
+      "main": [
+        [
+          {
+            "node": "Respuesta_listar_tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta_ticket_autorizado": {
+      "main": [
+        []
+      ]
+    },
+    "Validar_propietario_ticket": {
+      "main": [
+        [
+          {
+            "node": "Respuesta_ticket_autorizado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta_ticket_no_autorizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Buscar_contacto_listado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta_empresa_no_encontrada.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_ticket": {
+      "main": [
+        [
+          {
+            "node": "Buscar_empresa_actualizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_empresa_actualizar": {
+      "main": [
+        [
+          {
+            "node": "Buscar_contacto_actualizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_contacto_actualizar": {
+      "main": [
+        [
+          {
+            "node": "Validar_propietario_actualizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar_propietario_actualizar": {
+      "main": [
+        [
+          {
+            "node": "Actualizar_ticket_AT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validar_propietario_actualizar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "nodeGroups": [],
+  "id": "wYLfZMIkHMxSxzJE",
+  "tags": []
+}
