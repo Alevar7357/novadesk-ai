@@ -37,8 +37,39 @@ La sección **Credentials** de n8n muestra credenciales OAuth2 configuradas para
 
 ## Archivos y reproducción
 
-- Manager previsto en `workflows/checkpoint4_alexis_varela.json`. La rama Gmail se revisó en la copia `prueba entrega 4`, ID `3ayBK6F1ZD8LhOlA`.
-- Worker comercial`worker-comercial.json`. Su recorrido se documentó con capturas.
+El repositorio contiene los siguientes workflows exportados desde n8n:
+
+| Archivo | Descripción |
+|---|---|
+| `checkpoint4_alexis_varela.json` | Workflow principal de NovaDesk, con el Manager y la rama de Gmail. |
+| `worker-comercial.json` | Gestión de solicitudes comerciales, cotizaciones e integración con HubSpot. |
+| `worker-tickets.json` | Gestión de tickets de soporte. |
+| `worker-escalamiento.json` | Escalamiento de incidencias al equipo de soporte L2. |
+
+### Instrucciones de importación
+
+1. Importar los cuatro archivos JSON en n8n.
+2. Configurar las credenciales necesarias para Telegram, Airtable, HubSpot, Gmail, Slack y DeepSeek.
+3. Revisar los nodos del Manager que invocan sub-workflows y vincularlos con los Workers importados.
+4. Comprobar los identificadores de bases, tablas y campos utilizados en Airtable.
+5. Revisar las referencias a registros de HubSpot y las configuraciones de los canales.
+6. Ejecutar pruebas manuales antes de activar los triggers.
+
+Las credenciales y los identificadores específicos de cada instancia deben configurarse en el entorno donde se importen los workflows.
+
+### Validaciones realizadas
+
+- Identificación de contactos y empresas mediante Airtable.
+- Consulta de un contacto existente en HubSpot.
+- Generación de una cotización comercial en estado Borrador.
+- Creación de un borrador de respuesta en Gmail.
+- Notificación al equipo mediante Slack.
+
+### Limitaciones conocidas
+
+La ruta de creación de un contacto nuevo en HubSpot mediante búsqueda previa y upsert está implementada, pero su prueba funcional completa permanece pendiente.
+Los workflows dependen de credenciales, identificadores de recursos externos y referencias entre sub-workflows que deben configurarse después de importarlos.
+El envío de respuestas de Gmail requiere intervención humana: el agente únicamente prepara el borrador.
 
 
 
