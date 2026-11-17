@@ -40,7 +40,7 @@ La sección **Credentials** de n8n muestra credenciales OAuth2 configuradas para
 - Export del Manager previsto en `workflows/checkpoint4_alexis_varela.json`. La rama Gmail se revisó en la copia `prueba entrega 4`, ID `3ayBK6F1ZD8LhOlA`.
 - Export del Worker comercial pendiente de incorporar. Su recorrido se documentó con capturas.
 - Para reproducir las pruebas, importá los exports limpios, vinculá el Worker comercial al Manager, reasigná las credenciales y seleccioná la base de Airtable y el canal de prueba en Slack. Usá un contacto de prueba vinculado a una empresa activa.
-- El [checklist de evidencias](evidencias/checklist.md) indica qué criterios cubren las capturas y qué falta para cerrar la entrega.
+
 
 
 - Export del Manager previsto en `workflows/checkpoint4_alexis_varela.json`. La rama Gmail se revisó en la copia `prueba entrega 4`, ID `3ayBK6F1ZD8LhOlA`.
